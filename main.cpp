@@ -34,6 +34,10 @@ struct horarioDisponible{
     }
 };
 
+horarioDisponible* crearHorario(string dia, string horaInicio, string horaFinal) {
+    horarioDisponible* nuevo = new horarioDisponible(dia, horaInicio, horaFinal);
+    return nuevo;
+}
 
 struct persona{
     //lista doble
@@ -45,13 +49,12 @@ struct persona{
     persona*sig;
     persona*ant;
 
-    persona(string n, string c, int e, horarioDisponible*h){
+    persona(string n, string c, int e){
         nombre = n;
         cedula = c;
         edad = e;
         sig = NULL;
         ant = NULL;
-        horario = h;
     }
 }*primeraPersona;
 
@@ -64,10 +67,9 @@ persona* buscarPorCedula(persona* p, string cedula) {
     }
     return NULL;
 }
-crearHorario();
+
 void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
-    horarioDisponible*horario = crearHorario();
-    persona *nuevo = new persona(nombre, cedula, edad, horario);
+    persona *nuevo = new persona(nombre, cedula, edad);
 
     if (p == NULL) {  // Si la lista est� vac�a, el nuevo nodo ser� el primer elemento
         p = nuevo;
@@ -185,10 +187,7 @@ struct subListaHorarios{
 
 };
 
-subListaHorarios* crearHorario() {
-    int dias;
-    cout<<"cuantos dia de la semana trabaja en el horario?\n";
-}
+
 
 //===============================INSERCIONES DE LISTAS========================
 //--------------------Insercion lista simple grupo musicar------------
