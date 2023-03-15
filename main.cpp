@@ -200,4 +200,5 @@ void insercionAlInicioGrupoMusical(grupoMusical*& cabeza, string nombre, string 
 int main()
 {
     insertarOrdenado(primeraPersona,"Josue","208260603",21);
+    imprimirLista(primeraPersona);
 }
