@@ -34,6 +34,7 @@ struct horarioDisponible{
     }
 };
 
+
 struct persona{
     //lista doble
     string nombre;
@@ -52,7 +53,60 @@ struct persona{
         ant = NULL;
         horario = h;
     }
-};
+}*primeraPersona;
+
+persona* buscarPorCedula(persona* p, string cedula) {
+    while (p != NULL) {
+        if (p->cedula == cedula) {
+            return p;
+        }
+        p = p->sig;
+    }
+    return NULL;
+}
+crearHorario();
+void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
+    horarioDisponible*horario = crearHorario();
+    persona *nuevo = new persona(nombre, cedula, edad, horario);
+
+    if (p == NULL) {  // Si la lista está vacía, el nuevo nodo será el primer elemento
+        p = nuevo;
+        return;
+    }
+
+    if (cedula < p->cedula) {  // Si la cédula del nuevo nodo es menor que la del primer elemento
+        nuevo->sig = p;
+        p->ant = nuevo;
+        p = nuevo;
+        return;
+    }
+
+    persona *actual = p;
+
+    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posición donde insertar el nuevo nodo
+        actual = actual->sig;
+    }
+
+    nuevo->sig = actual->sig;
+    if (actual->sig != NULL) {
+        actual->sig->ant = nuevo;
+    }
+    actual->sig = nuevo;
+    nuevo->ant = actual;
+}
+
+void imprimirLista(persona *p) {
+    while (p != NULL) {
+        cout << "Nombre: " << p->nombre << endl;
+        cout << "Cédula: " << p->cedula << endl;
+        cout << "Edad: " << p->edad << endl;
+        cout << "Horario disponible: " << endl;
+
+        cout << endl;
+        p = p->sig;
+    }
+}
+
 
 struct instrumentos{
     //lista circular
@@ -120,11 +174,24 @@ struct subListaIntegrantes{
     }
 };
 
+struct subListaHorarios{
+    horarioDisponible*horario;
+    subListaHorarios*sig;
+
+    subListaHorarios(horarioDisponible*h){
+        horario = h;
+        sig = NULL;
+    }
+
+};
+
+subListaHorarios* crearHorario() {
+    int dias;
+    cout<<"cuantos dia de la semana trabaja en el horario?\n";
+}
+
 
 int main()
 {
-    cout << "Hello world!" << endl;
-    return 0;
+    insertarOrdenado(primeraPersona,"Josue","208260603",21)
 }
-
-std::cout <<"Prueba";
