@@ -126,3 +126,5 @@ int main()
     cout << "Hello world!" << endl;
     return 0;
 }
+
+std::cout <<"Prueba";
