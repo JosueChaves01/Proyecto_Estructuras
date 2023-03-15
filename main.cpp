@@ -69,12 +69,12 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
     horarioDisponible*horario = crearHorario();
     persona *nuevo = new persona(nombre, cedula, edad, horario);
 
-    if (p == NULL) {  // Si la lista está vacía, el nuevo nodo será el primer elemento
+    if (p == NULL) {  // Si la lista estï¿½ vacï¿½a, el nuevo nodo serï¿½ el primer elemento
         p = nuevo;
         return;
     }
 
-    if (cedula < p->cedula) {  // Si la cédula del nuevo nodo es menor que la del primer elemento
+    if (cedula < p->cedula) {  // Si la cï¿½dula del nuevo nodo es menor que la del primer elemento
         nuevo->sig = p;
         p->ant = nuevo;
         p = nuevo;
@@ -83,7 +83,7 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
 
     persona *actual = p;
 
-    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posición donde insertar el nuevo nodo
+    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posiciï¿½n donde insertar el nuevo nodo
         actual = actual->sig;
     }
 
@@ -98,7 +98,7 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
 void imprimirLista(persona *p) {
     while (p != NULL) {
         cout << "Nombre: " << p->nombre << endl;
-        cout << "Cédula: " << p->cedula << endl;
+        cout << "Cï¿½dula: " << p->cedula << endl;
         cout << "Edad: " << p->edad << endl;
         cout << "Horario disponible: " << endl;
 
@@ -190,8 +190,15 @@ subListaHorarios* crearHorario() {
     cout<<"cuantos dia de la semana trabaja en el horario?\n";
 }
 
+//===============================INSERCIONES DE LISTAS========================
+//--------------------Insercion lista simple grupo musicar------------
+void insercionAlInicioGrupoMusical(grupoMusical*& cabeza, string nombre, string anioDeFundacion) {
+    grupoMusical* nuevoGrupo = new grupoMusical(nombre, anioDeFundacion);
+    nuevoGrupo-> sig = cabeza;
+    cabeza = nuevoGrupo;
+}
 
 int main()
 {
-    insertarOrdenado(primeraPersona,"Josue","208260603",21)
+    insertarOrdenado(primeraPersona,"Josue","208260603",21);
 }
