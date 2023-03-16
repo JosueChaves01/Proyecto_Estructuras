@@ -34,7 +34,7 @@ struct horarioDisponible{
     }
 };
 
-horarioDisponible* insertarHorario(string dia, string horaInicio, string horaFinal) {
+horarioDisponible* crearHorario(string dia, string horaInicio, string horaFinal) {
     horarioDisponible* nuevo = new horarioDisponible(dia, horaInicio, horaFinal);
     return nuevo;
 }
@@ -69,34 +69,6 @@ persona* buscarPorCedula(persona* p, string cedula) {
     return NULL;
 }
 
-void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
-    persona *nuevo = new persona(nombre, cedula, edad);
-
-    if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
-        p = nuevo;
-        return;
-    }
-
-    if (cedula < p->cedula) {  // Si la cedula del nuevo nodo es menor que la del primer elemento
-        nuevo->sig = p;
-        p->ant = nuevo;
-        p = nuevo;
-        return;
-    }
-
-    persona *actual = p;
-
-    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posicion donde insertar el nuevo nodo
-        actual = actual->sig;
-    }
-
-    nuevo->sig = actual->sig;
-    if (actual->sig != NULL) {
-        actual->sig->ant = nuevo;
-    }
-    actual->sig = nuevo;
-    nuevo->ant = actual;
-}
 
 void imprimirLista(persona *p) {
     while (p != NULL) {
@@ -196,6 +168,35 @@ void insercionAlInicioGrupoMusical(grupoMusical*& cabeza, string nombre, string 
     grupoMusical* nuevoGrupo = new grupoMusical(nombre, anioDeFundacion);
     nuevoGrupo-> sig = cabeza;
     cabeza = nuevoGrupo;
+}
+//--------------------Insercion lista doble ordenada por cedula Persona------------
+void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
+    persona *nuevo = new persona(nombre, cedula, edad);
+
+    if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
+        p = nuevo;
+        return;
+    }
+
+    if (cedula < p->cedula) {  // Si la cedula del nuevo nodo es menor que la del primer elemento
+        nuevo->sig = p;
+        p->ant = nuevo;
+        p = nuevo;
+        return;
+    }
+
+    persona *actual = p;
+
+    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posicion donde insertar el nuevo nodo
+        actual = actual->sig;
+    }
+
+    nuevo->sig = actual->sig;
+    if (actual->sig != NULL) {
+        actual->sig->ant = nuevo;
+    }
+    actual->sig = nuevo;
+    nuevo->ant = actual;
 }
 
 int main()
