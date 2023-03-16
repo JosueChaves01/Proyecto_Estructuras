@@ -34,10 +34,11 @@ struct horarioDisponible{
     }
 };
 
-horarioDisponible* crearHorario(string dia, string horaInicio, string horaFinal) {
+horarioDisponible* insertarHorario(string dia, string horaInicio, string horaFinal) {
     horarioDisponible* nuevo = new horarioDisponible(dia, horaInicio, horaFinal);
     return nuevo;
 }
+
 
 struct persona{
     //lista doble
@@ -71,12 +72,12 @@ persona* buscarPorCedula(persona* p, string cedula) {
 void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
     persona *nuevo = new persona(nombre, cedula, edad);
 
-    if (p == NULL) {  // Si la lista est� vac�a, el nuevo nodo ser� el primer elemento
+    if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
         p = nuevo;
         return;
     }
 
-    if (cedula < p->cedula) {  // Si la c�dula del nuevo nodo es menor que la del primer elemento
+    if (cedula < p->cedula) {  // Si la cedula del nuevo nodo es menor que la del primer elemento
         nuevo->sig = p;
         p->ant = nuevo;
         p = nuevo;
@@ -85,7 +86,7 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
 
     persona *actual = p;
 
-    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posici�n donde insertar el nuevo nodo
+    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posicion donde insertar el nuevo nodo
         actual = actual->sig;
     }
 
@@ -100,7 +101,7 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
 void imprimirLista(persona *p) {
     while (p != NULL) {
         cout << "Nombre: " << p->nombre << endl;
-        cout << "C�dula: " << p->cedula << endl;
+        cout << "Cedula: " << p->cedula << endl;
         cout << "Edad: " << p->edad << endl;
         cout << "Horario disponible: " << endl;
 
@@ -200,5 +201,6 @@ void insercionAlInicioGrupoMusical(grupoMusical*& cabeza, string nombre, string 
 int main()
 {
     insertarOrdenado(primeraPersona,"Josue","208260603",21);
+    insertarOrdenado(primeraPersona,"Carlos","208212333",20);
     imprimirLista(primeraPersona);
 }
