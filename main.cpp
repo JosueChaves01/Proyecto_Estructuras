@@ -21,31 +21,33 @@ struct grupoMusical{
 struct horarioDisponible{
     //sublista simple
     string dia;
-    string horaDeInicio;
-    string horaFinal;
+    int horaDeInicio;
+    int horaFinal;
     horarioDisponible* sig;
 
-    horarioDisponible(string d, string horaI, string horaF){
+    horarioDisponible(string d, int horaI, int horaF){
         dia = d;
         horaFinal = horaF;
         horaDeInicio = horaI;
-
         sig = NULL;
     }
 };
 
-horarioDisponible* crearHorario(string dia, string horaInicio, string horaFinal) {
-    horarioDisponible* nuevo = new horarioDisponible(dia, horaInicio, horaFinal);
-    return nuevo;
+void imprimirHorarioDisponible(horarioDisponible* horario) {
+    while (horario != NULL) {
+        cout << "Dia: " << horario->dia << endl;
+        cout << "Hora de inicio: " << horario->horaDeInicio << endl;
+        cout << "Hora final: " << horario->horaFinal << endl<<endl;
+        horario = horario->sig;
+    }
 }
-
 
 struct persona{
     //lista doble
     string nombre;
     string cedula;
     int edad;
-    horarioDisponible* horario;
+    horarioDisponible* horarios=NULL;
 
     persona*sig;
     persona*ant;
@@ -76,7 +78,8 @@ void imprimirLista(persona *p) {
         cout << "Cedula: " << p->cedula << endl;
         cout << "Edad: " << p->edad << endl;
         cout << "Horario disponible: " << endl;
-
+        horarioDisponible * horario = p->horarios;
+        imprimirHorarioDisponible(horario);
         cout << endl;
         p = p->sig;
     }
@@ -103,16 +106,16 @@ struct instrumentos{
 
 };
 
-struct eventos{
+struct evento{
     //lista simple
     string nombre;
     string lugar;
     string hora;
     string dia;
     int duracion;
-    eventos*sig;
+    evento*sig;
 
-    eventos(string n, string l, string h, string d, int dur){
+    evento(string n, string l, string h, string d, int dur){
         nombre = n;
         lugar = l;
         hora = h;
@@ -124,19 +127,24 @@ struct eventos{
 
 struct historiaEventos{
     //lista doble y circular
-    eventos * evento;
+    evento * eventos;
     int calificacion;
     grupoMusical * grupo;
 
     historiaEventos*sig;
     historiaEventos*ant;
 
-    historiaEventos(eventos * e , int c, grupoMusical*g){
-        evento = e;
+    historiaEventos(int c, grupoMusical*g,evento*&e){
+        eventos = e;
         calificacion = c;
         grupo = g;
     }
 
+};
+
+struct subListaEventos{
+    evento * e;
+    subListaEventos * sig;
 };
 
 struct subListaIntegrantes{
@@ -149,16 +157,6 @@ struct subListaIntegrantes{
     }
 };
 
-struct subListaHorarios{
-    horarioDisponible*horario;
-    subListaHorarios*sig;
-
-    subListaHorarios(horarioDisponible*h){
-        horario = h;
-        sig = NULL;
-    }
-
-};
 
 
 
@@ -198,10 +196,49 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
     actual->sig = nuevo;
     nuevo->ant = actual;
 }
+ void agregarHorarioaPersona(){
+    string cedula;
+    cout<< "Ingrese el numero de cedula de la persona a la que desea agregarle un horario"<<endl;
+    cin>>cedula;
+    persona * per = buscarPorCedula(primeraPersona,cedula);
+    int opcion = 10;
+    string dia;
+    int horaInicio;
+    int horaFinal;
+    while(opcion != 0){
+        cout<<"Ingrese 1 si desea ingresar un nuevo horario y 0 para terminar de agregar horarios"<<endl;
+        cin>>opcion;
+        if(opcion == 0){
+            break;
+        }
+        if(opcion == 1){
+            cout<< "ingrese un dia de la semana"<<endl;
+            cin>>dia;
+            cout<< "ingrese la hora de inicio"<<endl;
+            cin>>horaInicio;
+            cout<< "ingrese la hora de finalizacion"<<endl;
+            cin>>horaFinal;
 
+            horarioDisponible * nuevoHorario = new horarioDisponible(dia,horaInicio,horaFinal);
+
+            if(per->horarios == NULL){
+                per->horarios = nuevoHorario;
+            }
+            else{
+                horarioDisponible * tempH = per->horarios;
+                while(tempH->sig != NULL){
+                    tempH = tempH->sig;
+                }
+                tempH->sig = nuevoHorario;
+            }
+        }
+        int opcion = 10;
+    }
+ }
 int main()
 {
     insertarOrdenado(primeraPersona,"Josue","208260603",21);
     insertarOrdenado(primeraPersona,"Carlos","208212333",20);
+    agregarHorarioaPersona();
     imprimirLista(primeraPersona);
 }
