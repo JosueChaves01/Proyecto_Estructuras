@@ -47,12 +47,12 @@ struct persona{
     }
 }*primeraPersona;
 
-persona* buscarPorCedula(persona* p, string cedula) {
-    while (p != NULL) {
-        if (p->cedula == cedula) {
-            return p;
+persona* buscarPorCedula( string cedula) {
+    while (primeraPersona != NULL) {
+        if (primeraPersona->cedula == cedula) {
+            return primeraPersona;
         }
-        p = p->sig;
+        primeraPersona = primeraPersona->sig;
     }
     return NULL;
 }
@@ -123,6 +123,17 @@ struct grupoMusical{
     }
 }*primerGrupoMusical;
 
+grupoMusical* buscarGrupoMusicalPorNombre(string nombre) {
+    grupoMusical* actual = primerGrupoMusical;
+    while (actual != NULL) {
+        if (actual->nombre == nombre) {
+            return actual;
+        }
+        actual = actual->sig;
+    }
+    return NULL;
+}
+
 struct historiaEventos{
     //lista doble y circular
     evento * eventos;
@@ -162,19 +173,23 @@ struct instrumentos{
 
 //===============================INSERCIONES DE LISTAS========================
 //--------------------Insercion lista simple grupo musicar------------
-void insercionAlInicioGrupoMusical() {
-    string nombre ;
-    string anioDeFundacion;
-    cout << "Ingrese el nombre"<<endl;
-    cin >> nombre;
-    cout << "ingrese el anio de fundacion"<<endl;
-    cin >> anioDeFundacion;
+void insercionAlInicioGrupoMusical(string nombre , string anioDeFundacion) {
     grupoMusical* nuevoGrupo = new grupoMusical(nombre, anioDeFundacion);
     nuevoGrupo-> sig = primerGrupoMusical;
     primerGrupoMusical = nuevoGrupo;
 }
+void insertarDirectoraGrupoMusical(string cedula, string nombre){
+    persona * per = buscarPorCedula(cedula);
+    grupoMusical * grupo = buscarGrupoMusicalPorNombre(nombre);
+
+    if((per==NULL)||(grupo==NULL)){
+        cout<< "Datos Invalidos"<<endl;
+        return;
+    }
+    grupo->director = per;
+}
 //--------------------Insercion lista doble ordenada por cedula Persona------------
-void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
+void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
     persona *nuevo = new persona(nombre, cedula, edad);
 
     if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
@@ -206,7 +221,7 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
     string cedula;
     cout<< "Ingrese el numero de cedula de la persona a la que desea agregarle un horario"<<endl;
     cin>>cedula;
-    persona * per = buscarPorCedula(primeraPersona,cedula);
+    persona * per = buscarPorCedula(cedula);
     if(per==NULL){
         cout << "La persona no existe" << endl;
         return;
