@@ -2,21 +2,7 @@
 
 using namespace std;
 
-struct grupoMusical{
-    //lista simple
-    int edad;
-    string nombre;
-    string anioDeFundacion;
 
-
-    grupoMusical*sig;
-
-    grupoMusical(string n, string a){
-        nombre = n;
-        anioDeFundacion = a;
-        sig = NULL;
-    }
-};
 
 struct horarioDisponible{
     //sublista simple
@@ -85,7 +71,74 @@ void imprimirLista(persona *p) {
     }
 }
 
+struct subListaIntegrantes{
+    persona * integrante;
+    subListaIntegrantes*sig;
 
+    subListaIntegrantes(persona* i){
+        integrante = i;
+        sig = NULL;
+    }
+};
+struct evento{
+    //lista simple
+    string nombre;
+    string lugar;
+    string hora;
+    string dia;
+    int duracion;
+    evento*sig;
+
+    evento(string n, string l, string h, string d, int dur){
+        nombre = n;
+        lugar = l;
+        hora = h;
+        dia = d;
+        duracion = dur;
+        sig = NULL;
+    }
+};
+
+
+
+struct subListaEventos{
+    evento * e;
+    subListaEventos * sig;
+};
+struct grupoMusical{
+    //lista simple
+    int edad;
+    string nombre;
+    string anioDeFundacion;
+
+    persona * director;
+    subListaIntegrantes * integrates;
+    subListaEventos * eventos;
+    grupoMusical*sig;
+
+    grupoMusical(string n, string a){
+        nombre = n;
+        anioDeFundacion = a;
+        sig = NULL;
+    }
+}*primerGrupoMusical;
+
+struct historiaEventos{
+    //lista doble y circular
+    evento * eventos;
+    int calificacion;
+    grupoMusical * grupo;
+
+    historiaEventos*sig;
+    historiaEventos*ant;
+
+    historiaEventos(int c, grupoMusical*g,evento*&e){
+        eventos = e;
+        calificacion = c;
+        grupo = g;
+    }
+
+};
 struct instrumentos{
     //lista circular
     string id;
@@ -106,66 +159,19 @@ struct instrumentos{
 
 };
 
-struct evento{
-    //lista simple
-    string nombre;
-    string lugar;
-    string hora;
-    string dia;
-    int duracion;
-    evento*sig;
-
-    evento(string n, string l, string h, string d, int dur){
-        nombre = n;
-        lugar = l;
-        hora = h;
-        dia = d;
-        duracion = dur;
-        sig = NULL;
-    }
-};
-
-struct historiaEventos{
-    //lista doble y circular
-    evento * eventos;
-    int calificacion;
-    grupoMusical * grupo;
-
-    historiaEventos*sig;
-    historiaEventos*ant;
-
-    historiaEventos(int c, grupoMusical*g,evento*&e){
-        eventos = e;
-        calificacion = c;
-        grupo = g;
-    }
-
-};
-
-struct subListaEventos{
-    evento * e;
-    subListaEventos * sig;
-};
-
-struct subListaIntegrantes{
-    persona * integrante;
-    subListaIntegrantes*sig;
-
-    subListaIntegrantes(persona* i){
-        integrante = i;
-        sig = NULL;
-    }
-};
-
-
-
 
 //===============================INSERCIONES DE LISTAS========================
 //--------------------Insercion lista simple grupo musicar------------
-void insercionAlInicioGrupoMusical(grupoMusical*& cabeza, string nombre, string anioDeFundacion) {
+void insercionAlInicioGrupoMusical() {
+    string nombre ;
+    string anioDeFundacion;
+    cout << "Ingrese el nombre"<<endl;
+    cin >> nombre;
+    cout << "ingrese el anio de fundacion"<<endl;
+    cin >> anioDeFundacion;
     grupoMusical* nuevoGrupo = new grupoMusical(nombre, anioDeFundacion);
-    nuevoGrupo-> sig = cabeza;
-    cabeza = nuevoGrupo;
+    nuevoGrupo-> sig = primerGrupoMusical;
+    primerGrupoMusical = nuevoGrupo;
 }
 //--------------------Insercion lista doble ordenada por cedula Persona------------
 void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
@@ -201,6 +207,10 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
     cout<< "Ingrese el numero de cedula de la persona a la que desea agregarle un horario"<<endl;
     cin>>cedula;
     persona * per = buscarPorCedula(primeraPersona,cedula);
+    if(per==NULL){
+        cout << "La persona no existe" << endl;
+        return;
+    }
     int opcion = 10;
     string dia;
     int horaInicio;
@@ -238,7 +248,7 @@ void insertarOrdenado(persona *&p, string nombre, string cedula, int edad) {
 int main()
 {
     insertarOrdenado(primeraPersona,"Josue","208260603",21);
-    insertarOrdenado(primeraPersona,"Carlos","208212333",20);
+    insertarOrdenado(primeraPersona,"Carlos","209212333",20);
     agregarHorarioaPersona();
     imprimirLista(primeraPersona);
 }
