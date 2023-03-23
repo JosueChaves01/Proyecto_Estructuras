@@ -58,16 +58,16 @@ persona* buscarPorCedula( string cedula) {
 }
 
 
-void imprimirLista(persona *p) {
-    while (p != NULL) {
-        cout << "Nombre: " << p->nombre << endl;
-        cout << "Cedula: " << p->cedula << endl;
-        cout << "Edad: " << p->edad << endl;
+void imprimirLista() {
+    while (primeraPersona != NULL) {
+        cout << "Nombre: " << primeraPersona->nombre << endl;
+        cout << "Cedula: " << primeraPersona->cedula << endl;
+        cout << "Edad: " << primeraPersona->edad << endl;
         cout << "Horario disponible: " << endl;
-        horarioDisponible * horario = p->horarios;
+        horarioDisponible * horario = primeraPersona->horarios;
         imprimirHorarioDisponible(horario);
         cout << endl;
-        p = p->sig;
+        primeraPersona = primeraPersona->sig;
     }
 }
 
@@ -140,7 +140,7 @@ void imprimirGrupoMusical(){
             cout << "nombre: " << tempG->nombre << endl;
             cout << "anio de funacion: " << tempG->anioDeFundacion << endl;
             cout << "director: " << tempG->director->nombre << endl;
-            //imprimirIntegrantes(tempG->integrates);
+            imprimirIntegrantes(tempG->integrates);
             tempG = tempG->sig;
         }
         cout << "anio de funacion: " << tempG->anioDeFundacion << endl;
@@ -333,12 +333,14 @@ void menuInformacion() {
         }
 
         else if(op == 4){
-            main();
+
+            break;
         }
 
         else{
             std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
         }
+        int op = 0;
     }
 }
 
@@ -400,6 +402,7 @@ void menuConsultas() {
         else{
             std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
         }
+        int op = 0;
     }
 }
 
@@ -419,7 +422,8 @@ void menuReportes() {
         std::cin >> op;
 
         if(op == 1){
-
+            imprimirGrupoMusical();
+            imprimirLista();
         }
 
         else if(op == 2){
@@ -441,6 +445,7 @@ void menuReportes() {
         else{
             std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
         }
+        int op = 0;
     }
 
 }
@@ -449,7 +454,7 @@ int main()
 {
     int op = 0;
 
-    while( op != -1){
+    while( op != 4){
         std::cout <<"\n==========Menu principal==========" <<std::endl;
         std::cout <<"1) Ingresar y actualizar informacion" <<std::endl;
         std::cout <<"2) Consultas" <<std::endl;
@@ -458,8 +463,11 @@ int main()
 
         std::cout <<"Ingrese la opcion que desea realizar: ";
         std::cin >> op;
-
-        if(op == 1){
+        if(op == 4){
+            std::cout <<"<<<Fin del programa>>>";
+            break;
+        }
+        else if(op == 1){
           menuInformacion();
         }
 
@@ -471,16 +479,10 @@ int main()
           menuReportes();
         }
 
-        else if(op == 4){
-            op == -1;
-            std::cout <<"<<<Fin del programa>>>";
-
-            break;
-        }
-
         else{
             std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
         }
+        int op = 0;
     }
     //===================================
     //insertarOrdenado(primeraPersona,"Josue","208260603",21);
