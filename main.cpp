@@ -75,11 +75,15 @@ struct subListaIntegrantes{
     persona * integrante;
     subListaIntegrantes*sig;
 
-    subListaIntegrantes(persona* i){
-        integrante = i;
-        sig = NULL;
-    }
+
 };
+void imprimirIntegrantes(subListaIntegrantes * Integrantes){
+    subListaIntegrantes * tempI = Integrantes;
+    while(tempI->sig!=NULL){
+        cout << "nombre: " << tempI->integrante->nombre << endl;
+        tempI = tempI->sig;
+    }
+}
 struct evento{
     //lista simple
     string nombre;
@@ -120,8 +124,31 @@ struct grupoMusical{
         nombre = n;
         anioDeFundacion = a;
         sig = NULL;
+        persona * director = NULL;
+        subListaIntegrantes * integrates = NULL;
+        subListaEventos * eventos = NULL;
+        grupoMusical*sig = NULL;
     }
 }*primerGrupoMusical;
+
+void imprimirGrupoMusical(){
+    if(primerGrupoMusical == NULL)
+        std::cout<< "\nNo hay grupos\n";
+    else{
+        grupoMusical * tempG = primerGrupoMusical;
+        while(tempG->sig!=NULL){
+            cout << "nombre: " << tempG->nombre << endl;
+            cout << "anio de funacion: " << tempG->anioDeFundacion << endl;
+            cout << "director: " << tempG->director->nombre << endl;
+            //imprimirIntegrantes(tempG->integrates);
+            tempG = tempG->sig;
+        }
+        cout << "anio de funacion: " << tempG->anioDeFundacion << endl;
+        cout << "nombre: " << tempG->nombre << endl;
+        cout << "director: " << tempG->director->nombre << endl;
+
+    }
+}
 
 grupoMusical* buscarGrupoMusicalPorNombre(string nombre) {
     grupoMusical* actual = primerGrupoMusical;
@@ -173,10 +200,10 @@ struct instrumentos{
 
 //===============================INSERCIONES DE LISTAS========================
 //--------------------Insercion lista simple grupo musicar------------
-void insercionAlInicioGrupoMusical(string nombre , string anioDeFundacion) {
+void insercionAlInicioGrupoMusical(string nombre , string anioDeFundacion, grupoMusical *& grupo){
     grupoMusical* nuevoGrupo = new grupoMusical(nombre, anioDeFundacion);
-    nuevoGrupo-> sig = primerGrupoMusical;
-    primerGrupoMusical = nuevoGrupo;
+    nuevoGrupo-> sig = grupo;
+    grupo = nuevoGrupo;
 }
 void insertarDirectoraGrupoMusical(string cedula, string nombre){
     persona * per = buscarPorCedula(cedula);
@@ -187,6 +214,22 @@ void insertarDirectoraGrupoMusical(string cedula, string nombre){
         return;
     }
     grupo->director = per;
+}
+void insertarIntegranteaGrupoMusical(string cedula, string nombre){
+    persona * per = buscarPorCedula(cedula);
+    grupoMusical * grupo = buscarGrupoMusicalPorNombre(nombre);
+
+    if((per==NULL)||(grupo==NULL)){
+        cout<< "Datos Invalidos"<<endl;
+        return;
+    }
+
+    subListaIntegrantes * nuevaSublista = grupo->integrates;
+    nuevaSublista->integrante = per;
+    grupo->integrates = nuevaSublista;
+
+
+
 }
 //--------------------Insercion lista doble ordenada por cedula Persona------------
 void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
@@ -263,14 +306,15 @@ void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
 
 //==============================MENUS Y SUB-MENUS=============================
 //-----------------Menu para ingresar y actualizar informacion--------------
+int main();
 void menuInformacion() {
     int op = 0;
 
     while( op != -1){
         std::cout <<"\n==========Menu principal==========" <<std::endl;
-        std::cout <<"1) Ingresar datos en listas" <<std::endl;   
-        std::cout <<"2) Modificar datos de listas" <<std::endl; 
-        std::cout <<"3) Borrar nodos de listas" <<std::endl; 
+        std::cout <<"1) Ingresar datos en listas" <<std::endl;
+        std::cout <<"2) Modificar datos de listas" <<std::endl;
+        std::cout <<"3) Borrar nodos de listas" <<std::endl;
         std::cout <<"4) Volver al menu principal" <<std::endl;
 
         std::cout <<"Ingrese la opcion que desea realizar: ";
@@ -279,13 +323,13 @@ void menuInformacion() {
         if(op == 1){
           menuInformacion();
         }
-        
+
         else if(op == 2){
-    
+
         }
 
         else if(op == 3){
-           
+
         }
 
         else if(op == 4){
@@ -318,27 +362,27 @@ void menuConsultas() {
         std::cin >> op;
 
         if(op == 1){
-          
+
         }
-        
+
         else if(op == 2){
-          
+
         }
 
         else if(op == 3){
-           
+
         }
 
         else if(op == 4){
-           
+
         }
 
         else if(op == 5){
-            
+
         }
 
         else if(op == 6){
-            
+
         }
 
         else if (op == 7) {
@@ -375,19 +419,19 @@ void menuReportes() {
         std::cin >> op;
 
         if(op == 1){
-          
+
         }
-        
+
         else if(op == 2){
-          
+
         }
 
         else if(op == 3){
-           
+
         }
 
         else if(op == 4){
-           
+
         }
 
         else if(op == 5){
@@ -407,9 +451,9 @@ int main()
 
     while( op != -1){
         std::cout <<"\n==========Menu principal==========" <<std::endl;
-        std::cout <<"1) Ingresar y actualizar informacion" <<std::endl;   
-        std::cout <<"2) Consultas" <<std::endl; 
-        std::cout <<"3) Reportes" <<std::endl; 
+        std::cout <<"1) Ingresar y actualizar informacion" <<std::endl;
+        std::cout <<"2) Consultas" <<std::endl;
+        std::cout <<"3) Reportes" <<std::endl;
         std::cout <<"4) Salir" <<std::endl;
 
         std::cout <<"Ingrese la opcion que desea realizar: ";
@@ -418,7 +462,7 @@ int main()
         if(op == 1){
           menuInformacion();
         }
-        
+
         else if(op == 2){
           menuConsultas();
         }
