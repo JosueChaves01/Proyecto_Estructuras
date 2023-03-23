@@ -260,10 +260,187 @@ void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
         int opcion = 10;
     }
  }
+
+//==============================MENUS Y SUB-MENUS=============================
+//-----------------Menu para ingresar y actualizar informacion--------------
+void menuInformacion() {
+    int op = 0;
+
+    while( op != -1){
+        std::cout <<"\n==========Menu principal==========" <<std::endl;
+        std::cout <<"1) Ingresar datos en listas" <<std::endl;   
+        std::cout <<"2) Modificar datos de listas" <<std::endl; 
+        std::cout <<"3) Borrar nodos de listas" <<std::endl; 
+        std::cout <<"4) Volver al menu principal" <<std::endl;
+
+        std::cout <<"Ingrese la opcion que desea realizar: ";
+        std::cin >> op;
+
+        if(op == 1){
+          menuInformacion();
+        }
+        
+        else if(op == 2){
+    
+        }
+
+        else if(op == 3){
+           
+        }
+
+        else if(op == 4){
+            main();
+        }
+
+        else{
+            std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
+        }
+    }
+}
+
+//--------------------MENU DE CONSULTAS--------------------------
+void menuConsultas() {
+    int op = 0;
+
+    while( op != -1){
+        std::cout <<"\n==========Menu principal==========" <<std::endl;
+        std::cout <<"1) Persona con mas participaciones en eventos" <<std::endl;  //punto 1
+        std::cout <<"2) Eventos que no cumplen con los requisitos" <<std::endl; //punto 2
+        std::cout <<"3) Eventos que no cumplen con disponibilidad horaria" <<std::endl; //punto 3
+        std::cout <<"4) Instrumento mas y menos popular" <<std::endl; //punto 4
+        std::cout <<"5) Persona pertenecientes a mas grupos musicales" <<std::endl; //punto 5
+        std::cout <<"6) Persona que toca mas instrumentos" <<std::endl; //punto 6
+        std::cout <<"7) Director con mejor calificacion" <<std::endl; //punto 7
+        std::cout <<"8) Grupo con mas participaciones en eventos" <<std::endl; //punto 8
+        std::cout <<"9) Volver al menu principal" <<std::endl;
+
+        std::cout <<"Ingrese la opcion que desea realizar: ";
+        std::cin >> op;
+
+        if(op == 1){
+          
+        }
+        
+        else if(op == 2){
+          
+        }
+
+        else if(op == 3){
+           
+        }
+
+        else if(op == 4){
+           
+        }
+
+        else if(op == 5){
+            
+        }
+
+        else if(op == 6){
+            
+        }
+
+        else if (op == 7) {
+
+        }
+
+        else if (op == 8) {
+
+        }
+
+        else if(op == 9){
+            main();
+        }
+
+        else{
+            std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
+        }
+    }
+}
+
+//----------------MENU DE REPORTES-------------------------
+void menuReportes() {
+    int op = 0;
+
+    while( op != -1){
+        std::cout <<"\n==========Menu principal==========" <<std::endl;
+        std::cout <<"1) Imprimir todas las listas" <<std::endl;  //punto 1
+        std::cout <<"2) Imprimir informacion de personas" <<std::endl; //punto 2
+        std::cout <<"3) Imprimir grupos musicales" <<std::endl; //punto 3
+        std::cout <<"4) Imprimir historial de eventos" <<std::endl; //punto 4;
+        std::cout <<"5) Volver al menu principal" <<std::endl;
+
+        std::cout <<"Ingrese la opcion que desea realizar: ";
+        std::cin >> op;
+
+        if(op == 1){
+          
+        }
+        
+        else if(op == 2){
+          
+        }
+
+        else if(op == 3){
+           
+        }
+
+        else if(op == 4){
+           
+        }
+
+        else if(op == 5){
+            main();
+        }
+
+        else{
+            std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
+        }
+    }
+
+}
+
 int main()
 {
-    insertarOrdenado(primeraPersona,"Josue","208260603",21);
-    insertarOrdenado(primeraPersona,"Carlos","209212333",20);
-    agregarHorarioaPersona();
-    imprimirLista(primeraPersona);
+    int op = 0;
+
+    while( op != -1){
+        std::cout <<"\n==========Menu principal==========" <<std::endl;
+        std::cout <<"1) Ingresar y actualizar informacion" <<std::endl;   
+        std::cout <<"2) Consultas" <<std::endl; 
+        std::cout <<"3) Reportes" <<std::endl; 
+        std::cout <<"4) Salir" <<std::endl;
+
+        std::cout <<"Ingrese la opcion que desea realizar: ";
+        std::cin >> op;
+
+        if(op == 1){
+          menuInformacion();
+        }
+        
+        else if(op == 2){
+          menuConsultas();
+        }
+
+        else if(op == 3){
+          menuReportes();
+        }
+
+        else if(op == 4){
+            op == -1;
+            std::cout <<"<<<Fin del programa>>>";
+
+            break;
+        }
+
+        else{
+            std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
+        }
+    }
+    //===================================
+    //insertarOrdenado(primeraPersona,"Josue","208260603",21);
+    //insertarOrdenado(primeraPersona,"Carlos","209212333",20);
+    //agregarHorarioaPersona();
+    //imprimirLista(primeraPersona);
 }
