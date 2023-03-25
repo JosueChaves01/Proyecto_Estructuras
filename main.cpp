@@ -58,14 +58,18 @@ persona* buscarPorCedula( string cedula) {
 }
 
 
-void imprimirLista() {
+void imprimirListaPersona() {
     while (primeraPersona != NULL) {
+        cout << "-------------Persona-------------"<<endl;
         cout << "Nombre: " << primeraPersona->nombre << endl;
         cout << "Cedula: " << primeraPersona->cedula << endl;
         cout << "Edad: " << primeraPersona->edad << endl;
         cout << "Horario disponible: " << endl;
+
         horarioDisponible * horario = primeraPersona->horarios;
-        imprimirHorarioDisponible(horario);
+        if(horario != NULL){
+            imprimirHorarioDisponible(horario);
+        }
         cout << endl;
         primeraPersona = primeraPersona->sig;
     }
@@ -73,15 +77,22 @@ void imprimirLista() {
 
 struct subListaIntegrantes{
     persona * integrante;
-    subListaIntegrantes*sig;
-
-
+    subListaIntegrantes*sig = NULL;
 };
 void imprimirIntegrantes(subListaIntegrantes * Integrantes){
-    subListaIntegrantes * tempI = Integrantes;
-    while(tempI->sig!=NULL){
+    if(Integrantes == NULL){
+        std::cout<< "\nNo hay grupos\n";
+    }
+    else{
+        subListaIntegrantes * tempI = Integrantes;
+        cout << "--------------------------Integrantes--------------------------"<<endl;
+        while(tempI->sig!=NULL){
+            cout << "-------------Integrante-------------"<<endl;
+            cout << "nombre: " << tempI->integrante->nombre << endl;
+            tempI = tempI->sig;
+        }
+        cout << "-------------Integrante-------------"<<endl;
         cout << "nombre: " << tempI->integrante->nombre << endl;
-        tempI = tempI->sig;
     }
 }
 struct evento{
@@ -131,21 +142,24 @@ struct grupoMusical{
     }
 }*primerGrupoMusical;
 
-void imprimirGrupoMusical(){
-    if(primerGrupoMusical == NULL)
+void imprimirGrupoMusical(grupoMusical * grupo){
+    if(grupo != NULL)
         std::cout<< "\nNo hay grupos\n";
     else{
-        grupoMusical * tempG = primerGrupoMusical;
+        grupoMusical * tempG = grupo;
+        cout << "--------------------------Grupos--------------------------"<<endl;
         while(tempG->sig!=NULL){
-            cout << "nombre: " << tempG->nombre << endl;
-            cout << "anio de funacion: " << tempG->anioDeFundacion << endl;
-            cout << "director: " << tempG->director->nombre << endl;
+            cout << "-------------Grupo-------------"<<endl;
+            cout << "Nombre: " << tempG->nombre << endl;
+            cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
+            cout << "Director: " << tempG->director->nombre << endl;
             imprimirIntegrantes(tempG->integrates);
             tempG = tempG->sig;
         }
-        cout << "anio de funacion: " << tempG->anioDeFundacion << endl;
-        cout << "nombre: " << tempG->nombre << endl;
-        cout << "director: " << tempG->director->nombre << endl;
+        cout << "-------------Grupo-------------"<<endl;
+        cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
+        cout << "Nombre: " << tempG->nombre << endl;
+        cout << "Director: " << tempG->director->nombre << endl;
 
     }
 }
@@ -422,8 +436,8 @@ void menuReportes() {
         std::cin >> op;
 
         if(op == 1){
-            imprimirGrupoMusical();
-            imprimirLista();
+            imprimirGrupoMusical(primerGrupoMusical);
+            imprimirListaPersona();
         }
 
         else if(op == 2){
@@ -450,15 +464,27 @@ void menuReportes() {
 
 }
 //------------------------Cargar Datos--------------------------------
+
 void cargarDatos(){
-    insercionAlInicioGrupoMusical("Los Ajenos","2007",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Ajenos","2007",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+
+    insertarOrdenado(primeraPersona,"Josue","208260603",21);
+    insertarOrdenado(primeraPersona,"Carlos","302540673",20);
+    insertarOrdenado(primeraPersona,"Luis","603210123",19);
+    insertarOrdenado(primeraPersona,"Roberth","104820912",22);
+
+
+    insertarDirectoraGrupoMusical("208260603","Ajenos");
+    insertarDirectoraGrupoMusical("302540673","Morat");
+
+
 }
 int main()
 {
     int op = 0;
 
-    while( op != 4){
+    while( op != 5){
         std::cout <<"\n==========Menu principal==========" <<std::endl;
         std::cout <<"1) Ingresar y actualizar informacion" <<std::endl;
         std::cout <<"2) Consultas" <<std::endl;
