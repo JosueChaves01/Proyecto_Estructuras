@@ -396,7 +396,7 @@ void menuConsultas() {
         }
 
         else if(op == 9){
-            main();
+            break;
         }
 
         else{
@@ -439,7 +439,7 @@ void menuReportes() {
         }
 
         else if(op == 5){
-            main();
+            break;
         }
 
         else{
@@ -449,7 +449,11 @@ void menuReportes() {
     }
 
 }
-
+//------------------------Cargar Datos--------------------------------
+void cargarDatos(){
+    insercionAlInicioGrupoMusical("Los Ajenos","2007",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+}
 int main()
 {
     int op = 0;
@@ -459,11 +463,12 @@ int main()
         std::cout <<"1) Ingresar y actualizar informacion" <<std::endl;
         std::cout <<"2) Consultas" <<std::endl;
         std::cout <<"3) Reportes" <<std::endl;
-        std::cout <<"4) Salir" <<std::endl;
+        std::cout <<"4) Cargar Datos" <<std::endl;
+        std::cout <<"5) Salir" <<std::endl;
 
         std::cout <<"Ingrese la opcion que desea realizar: ";
         std::cin >> op;
-        if(op == 4){
+        if(op == 5){
             std::cout <<"<<<Fin del programa>>>";
             break;
         }
@@ -478,15 +483,14 @@ int main()
         else if(op == 3){
           menuReportes();
         }
+        else if(op == 4){
+          cargarDatos();
+        }
 
         else{
             std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
         }
         int op = 0;
     }
-    //===================================
-    //insertarOrdenado(primeraPersona,"Josue","208260603",21);
-    //insertarOrdenado(primeraPersona,"Carlos","209212333",20);
-    //agregarHorarioaPersona();
-    //imprimirLista(primeraPersona);
+
 }
