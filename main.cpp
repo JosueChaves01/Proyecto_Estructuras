@@ -246,8 +246,28 @@ void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
     actual->sig = nuevo;
     nuevo->ant = actual;
 }
+void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaFinal) {
+    persona* per = buscarPersona(cedula, primeraPersona);
+    if (per == NULL) {
+        cout << "La persona no existe" << endl;
+        return;
+    }
+    horarioDisponible* nuevoHorario = new horarioDisponible(dia, horaInicio, horaFinal);
 
- void agregarHorarioaPersona(){
+    if (per->horarios == NULL) {
+        per->horarios = nuevoHorario;
+    }
+    else {
+        horarioDisponible* tempH = per->horarios;
+        while (tempH->sig != NULL) {
+            tempH = tempH->sig;
+        }
+        tempH->sig = nuevoHorario;
+    }
+}
+
+
+void agregarHorarioaPersonaManual(){
     string cedula;
     cout<< "Ingrese el numero de cedula de la persona a la que desea agregarle un horario"<<endl;
     cin>>cedula;
@@ -555,6 +575,15 @@ void cargarDatos(){
 
     insertarIntegranteEnGrupo("603210123","Ajenos");
     insertarIntegranteEnGrupo("104820912","Morat");
+
+    agregarHorarioaPersona("208260603", "lunes", 1000, 1600);
+    agregarHorarioaPersona("208260603", "Martes", 1130, 1630);
+    agregarHorarioaPersona("302540673", "Lunes", 7000, 1200);
+    agregarHorarioaPersona("302540673", "Jueves", 8000, 1300);
+    agregarHorarioaPersona("603210123", "Sabado", 1300, 2000);
+    agregarHorarioaPersona("603210123", "Domingo", 9000, 1400);
+    agregarHorarioaPersona("104820912", "Miercoles", 8000, 1800);
+    agregarHorarioaPersona("104820912", "Viernes", 7030, 1530);
 
     insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
 
