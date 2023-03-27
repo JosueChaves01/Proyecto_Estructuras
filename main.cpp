@@ -3,7 +3,7 @@
 using namespace std;
 
 
-
+//==============================Estructuras==============================
 struct horarioDisponible{
     //sublista simple
     string dia;
@@ -18,15 +18,6 @@ struct horarioDisponible{
         sig = NULL;
     }
 };
-
-void imprimirHorarioDisponible(horarioDisponible* horario) {
-    while (horario != NULL) {
-        cout << "Dia: " << horario->dia << endl;
-        cout << "Hora de inicio: " << horario->horaDeInicio << endl;
-        cout << "Hora final: " << horario->horaFinal << endl<<endl;
-        horario = horario->sig;
-    }
-}
 
 struct persona{
     //lista doble
@@ -47,54 +38,11 @@ struct persona{
     }
 }*primeraPersona;
 
-persona* buscarPorCedula( string cedula) {
-    while (primeraPersona != NULL) {
-        if (primeraPersona->cedula == cedula) {
-            return primeraPersona;
-        }
-        primeraPersona = primeraPersona->sig;
-    }
-    return NULL;
-}
-
-
-void imprimirListaPersona() {
-    while (primeraPersona != NULL) {
-        cout << "-------------Persona-------------"<<endl;
-        cout << "Nombre: " << primeraPersona->nombre << endl;
-        cout << "Cedula: " << primeraPersona->cedula << endl;
-        cout << "Edad: " << primeraPersona->edad << endl;
-        cout << "Horario disponible: " << endl;
-
-        horarioDisponible * horario = primeraPersona->horarios;
-        if(horario != NULL){
-            imprimirHorarioDisponible(horario);
-        }
-        cout << endl;
-        primeraPersona = primeraPersona->sig;
-    }
-}
-
 struct subListaIntegrantes{
     persona * integrante;
     subListaIntegrantes*sig = NULL;
 };
-void imprimirIntegrantes(subListaIntegrantes * Integrantes){
-    if(Integrantes == NULL){
-        std::cout<< "\nNo hay grupos\n";
-    }
-    else{
-        subListaIntegrantes * tempI = Integrantes;
-        cout << "--------------------------Integrantes--------------------------"<<endl;
-        while(tempI->sig!=NULL){
-            cout << "-------------Integrante-------------"<<endl;
-            cout << "nombre: " << tempI->integrante->nombre << endl;
-            tempI = tempI->sig;
-        }
-        cout << "-------------Integrante-------------"<<endl;
-        cout << "nombre: " << tempI->integrante->nombre << endl;
-    }
-}
+
 struct evento{
     //lista simple
     string nombre;
@@ -112,14 +60,13 @@ struct evento{
         duracion = dur;
         sig = NULL;
     }
-};
-
-
+}*primerEvento;
 
 struct subListaEventos{
     evento * e;
     subListaEventos * sig;
 };
+
 struct grupoMusical{
     //lista simple
     int edad;
@@ -142,45 +89,12 @@ struct grupoMusical{
     }
 }*primerGrupoMusical;
 
-void imprimirGrupoMusical(grupoMusical * grupo){
-    if(grupo != NULL)
-        std::cout<< "\nNo hay grupos\n";
-    else{
-        grupoMusical * tempG = grupo;
-        cout << "--------------------------Grupos--------------------------"<<endl;
-        while(tempG->sig!=NULL){
-            cout << "-------------Grupo-------------"<<endl;
-            cout << "Nombre: " << tempG->nombre << endl;
-            cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
-            cout << "Director: " << tempG->director->nombre << endl;
-            imprimirIntegrantes(tempG->integrates);
-            tempG = tempG->sig;
-        }
-        cout << "-------------Grupo-------------"<<endl;
-        cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
-        cout << "Nombre: " << tempG->nombre << endl;
-        cout << "Director: " << tempG->director->nombre << endl;
-
-    }
-}
-
-grupoMusical* buscarGrupoMusicalPorNombre(string nombre) {
-    grupoMusical* actual = primerGrupoMusical;
-    while (actual != NULL) {
-        if (actual->nombre == nombre) {
-            return actual;
-        }
-        actual = actual->sig;
-    }
-    return NULL;
-}
-
 struct historiaEventos{
     //lista doble y circular
     evento * eventos;
     int calificacion;
     grupoMusical * grupo;
-
+    subListaIntegrantes * integrantes  = grupo->integrates;
     historiaEventos*sig;
     historiaEventos*ant;
 
@@ -191,6 +105,7 @@ struct historiaEventos{
     }
 
 };
+
 struct instrumentos{
     //lista circular
     string id;
@@ -211,6 +126,43 @@ struct instrumentos{
 
 };
 
+//==============================Buscar==============================
+//-----------------buscar grupo musical-----------------
+grupoMusical* buscarGrupoMusicalPorNombre(string nombre) {
+    grupoMusical* actual = primerGrupoMusical;
+    while (actual != NULL) {
+        if (actual->nombre == nombre) {
+            return actual;
+        }
+        actual = actual->sig;
+    }
+    return NULL;
+}
+
+//-----------------buscar persona
+persona* buscarPersona(string cedula, persona* primeraPersona) {
+    persona* actual = primeraPersona;
+    while (actual != NULL) {
+        if (actual->cedula == cedula) {
+            return actual;
+        }
+        actual = actual->sig;
+    }
+
+   return NULL;
+}
+
+evento* buscarEventoPorNombre(string nombre, evento* inicio) {
+    evento* actual = inicio;
+    while (actual != NULL) {
+        if (actual->nombre == nombre) {
+            return actual; // evento encontrado
+        }
+        actual = actual->sig;
+    }
+    return NULL; // evento no encontrado
+}
+
 
 //===============================INSERCIONES DE LISTAS========================
 //--------------------Insercion lista simple grupo musicar------------
@@ -219,8 +171,9 @@ void insercionAlInicioGrupoMusical(string nombre , string anioDeFundacion, grupo
     nuevoGrupo-> sig = grupo;
     grupo = nuevoGrupo;
 }
+
 void insertarDirectoraGrupoMusical(string cedula, string nombre){
-    persona * per = buscarPorCedula(cedula);
+    persona * per = buscarPersona(cedula,primeraPersona);
     grupoMusical * grupo = buscarGrupoMusicalPorNombre(nombre);
 
     if((per==NULL)||(grupo==NULL)){
@@ -229,44 +182,51 @@ void insertarDirectoraGrupoMusical(string cedula, string nombre){
     }
     grupo->director = per;
 }
+
 void insertarIntegranteaGrupoMusical(string cedula, string nombre){
-    persona * per = buscarPorCedula(cedula);
+    persona * per = buscarPersona(cedula,primeraPersona);
     grupoMusical * grupo = buscarGrupoMusicalPorNombre(nombre);
 
     if((per==NULL)||(grupo==NULL)){
         cout<< "Datos Invalidos"<<endl;
         return;
     }
-
     subListaIntegrantes * nuevaSublista = grupo->integrates;
     nuevaSublista->integrante = per;
     grupo->integrates = nuevaSublista;
-
-
-
 }
+
+void insertarEvento(string nombre, string lugar, string hora, string dia, int duracion) {
+    evento* nuevoEvento = new evento(nombre, lugar, hora, dia, duracion);
+    if (primerEvento == NULL) {
+        primerEvento = nuevoEvento;
+    } else {
+        evento* actual = primerEvento;
+        while (actual->sig != NULL) {
+            actual = actual->sig;
+        }
+        actual->sig = nuevoEvento;
+    }
+}
+
+
 //--------------------Insercion lista doble ordenada por cedula Persona------------
 void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
     persona *nuevo = new persona(nombre, cedula, edad);
-
     if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
         p = nuevo;
         return;
     }
-
     if (cedula < p->cedula) {  // Si la cedula del nuevo nodo es menor que la del primer elemento
         nuevo->sig = p;
         p->ant = nuevo;
         p = nuevo;
         return;
     }
-
     persona *actual = p;
-
     while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posicion donde insertar el nuevo nodo
         actual = actual->sig;
     }
-
     nuevo->sig = actual->sig;
     if (actual->sig != NULL) {
         actual->sig->ant = nuevo;
@@ -274,11 +234,12 @@ void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
     actual->sig = nuevo;
     nuevo->ant = actual;
 }
+
  void agregarHorarioaPersona(){
     string cedula;
     cout<< "Ingrese el numero de cedula de la persona a la que desea agregarle un horario"<<endl;
     cin>>cedula;
-    persona * per = buscarPorCedula(cedula);
+    persona * per = buscarPersona(cedula,primeraPersona);
     if(per==NULL){
         cout << "La persona no existe" << endl;
         return;
@@ -316,7 +277,107 @@ void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
         }
         int opcion = 10;
     }
- }
+}
+
+//==============================Imprimir==============================
+//----------------imprimir Persona----------------
+void imprimirHorarioDisponible(horarioDisponible* horario) {
+    while (horario != NULL) {
+        cout << "Dia: " << horario->dia << endl;
+        cout << "Hora de inicio: " << horario->horaDeInicio << endl;
+        cout << "Hora final: " << horario->horaFinal << endl<<endl;
+        horario = horario->sig;
+    }
+}
+
+void imprimirListaPersona() {
+    cout << "--------------------------Personas--------------------------"<<endl;
+    while (primeraPersona != NULL) {
+        cout << "-------------Persona-------------"<<endl;
+        cout << "Nombre: " << primeraPersona->nombre << endl;
+        cout << "Cedula: " << primeraPersona->cedula << endl;
+        cout << "Edad: " << primeraPersona->edad << endl;
+        cout << "Horario disponible: " << endl;
+
+        horarioDisponible * horario = primeraPersona->horarios;
+        if(horario != NULL){
+            imprimirHorarioDisponible(horario);
+        }
+        cout << endl;
+        primeraPersona = primeraPersona->sig;
+    }
+}
+//----------------Imprimir Integrantes----------------
+void imprimirIntegrantes(subListaIntegrantes * Integrantes){
+    cout << "--------------------------Integrantes--------------------------"<<endl;
+    while(Integrantes != NULL){
+        cout << "-------------Integrante-------------"<<endl;
+        cout << "nombre: "<<Integrantes->integrante->nombre<< endl;
+        Integrantes = Integrantes->sig;
+    }
+
+}
+
+
+//----------------Imprimir Grupo----------------
+void imprimirGrupo(){
+    while(primerGrupoMusical != NULL){
+        cout << "-------------Grupo-------------"<<endl;
+        cout << "Nombre: " << primerGrupoMusical->nombre << endl;
+        cout << "Anio de funacion: " << primerGrupoMusical->anioDeFundacion << endl;
+        cout << "Director: " << primerGrupoMusical->director->nombre << endl;
+        cout << "Integrantes: "<< endl;
+        if(primerGrupoMusical->integrates != NULL){
+            imprimirIntegrantes(primerGrupoMusical->integrates);
+        }
+        primerGrupoMusical = primerGrupoMusical->sig;
+    }
+}
+
+void imprimirGrupoMusical(grupoMusical * grupo){
+    if(grupo == NULL)
+        std::cout<< "\nNo hay grupos\n";
+    else{
+        grupoMusical * tempG = grupo;
+        cout << "--------------------------Grupos--------------------------"<<endl;
+        while(tempG->sig!=NULL){
+            cout << "-------------Grupo-------------"<<endl;
+            cout << "Nombre: " << tempG->nombre << endl;
+            cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
+            cout << "Director: " << tempG->director->nombre << endl;
+            cout << "Integrantes: "<< endl;
+            if(tempG->integrates != NULL){
+                imprimirIntegrantes(tempG->integrates);
+            }
+
+            tempG = tempG->sig;
+        }
+        cout << "-------------Grupo-------------"<<endl;
+        cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
+        cout << "Nombre: " << tempG->nombre << endl;
+        cout << "Director: " << tempG->director->nombre << endl;
+        cout << "Integrantes: "<< endl;
+        if(tempG->integrates != NULL){
+                imprimirIntegrantes(tempG->integrates);
+        }
+
+    }
+}
+//----------------Imprimir Eventos----------------
+void imprimirEventos() {
+    evento* actual = primerEvento;
+    cout << "--------------------------Eventos--------------------------"<<endl;
+    while (actual != NULL) {
+        cout << "-------------Evento-------------"<<endl;
+        cout << "Nombre: " << actual->nombre << endl;
+        cout << "Lugar: " << actual->lugar << endl;
+        cout << "Hora: " << actual->hora << endl;
+        cout << "Dia: " << actual->dia << endl;
+        cout << "Duracion: " << actual->duracion << endl;
+        actual = actual->sig;
+    }
+}
+
 
 //==============================MENUS Y SUB-MENUS=============================
 //-----------------Menu para ingresar y actualizar informacion--------------
@@ -436,8 +497,9 @@ void menuReportes() {
         std::cin >> op;
 
         if(op == 1){
-            imprimirGrupoMusical(primerGrupoMusical);
             imprimirListaPersona();
+            imprimirEventos();
+            imprimirGrupo();
         }
 
         else if(op == 2){
@@ -479,9 +541,24 @@ void cargarDatos(){
     insertarDirectoraGrupoMusical("302540673","Morat");
 
 
+    insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
+
 }
+
+bool buscarCedulaEnSublista(string cedula, subListaIntegrantes* sublista) {
+    subListaIntegrantes* actual = sublista;
+    while (actual != NULL) {
+        if (actual->integrante->cedula == cedula) {
+            return true; // cédula encontrada en la sublista
+        }
+        actual = actual->sig;
+    }
+    return false; // cédula no encontrada en la sublista
+}
+
 int main()
 {
+    cargarDatos();
     int op = 0;
 
     while( op != 5){
