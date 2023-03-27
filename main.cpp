@@ -73,10 +73,10 @@ struct grupoMusical{
     string nombre;
     string anioDeFundacion;
 
-    persona * director;
-    subListaIntegrantes * integrates;
-    subListaEventos * eventos;
-    grupoMusical*sig;
+    persona * director=NULL;
+    subListaIntegrantes * integrates=NULL;
+    subListaEventos * eventos=NULL;
+    grupoMusical*sig=NULL;
 
     grupoMusical(string n, string a){
         nombre = n;
@@ -183,18 +183,30 @@ void insertarDirectoraGrupoMusical(string cedula, string nombre){
     grupo->director = per;
 }
 
-void insertarIntegranteaGrupoMusical(string cedula, string nombre){
-    persona * per = buscarPersona(cedula,primeraPersona);
-    grupoMusical * grupo = buscarGrupoMusicalPorNombre(nombre);
-
-    if((per==NULL)||(grupo==NULL)){
-        cout<< "Datos Invalidos"<<endl;
+void insertarIntegranteEnGrupo(string cedula, string nombreGrupo) {
+    persona* p = buscarPersona(cedula,primeraPersona);
+    if (p == NULL) {
+        cout << "La persona con cedula " << cedula << " no existe." << endl;
         return;
     }
-    subListaIntegrantes * nuevaSublista = grupo->integrates;
-    nuevaSublista->integrante = per;
-    grupo->integrates = nuevaSublista;
+    grupoMusical* g = buscarGrupoMusicalPorNombre(nombreGrupo);
+    if (g == NULL) {
+        cout << "El grupo musical " << nombreGrupo << " no existe." << endl;
+        return;
+    }
+    subListaIntegrantes* nodo = new subListaIntegrantes;
+    nodo->integrante = p;
+    if (g->integrates == NULL) {
+        g->integrates = nodo;
+    } else {
+        subListaIntegrantes* temp = g->integrates;
+        while (temp->sig != NULL) {
+            temp = temp->sig;
+        }
+        temp->sig = nodo;
+    }
 }
+
 
 void insertarEvento(string nombre, string lugar, string hora, string dia, int duracion) {
     evento* nuevoEvento = new evento(nombre, lugar, hora, dia, duracion);
@@ -312,7 +324,15 @@ void imprimirIntegrantes(subListaIntegrantes * Integrantes){
     cout << "--------------------------Integrantes--------------------------"<<endl;
     while(Integrantes != NULL){
         cout << "-------------Integrante-------------"<<endl;
-        cout << "nombre: "<<Integrantes->integrante->nombre<< endl;
+        cout << "Nombre: " << Integrantes->integrante->nombre << endl;
+        cout << "Cedula: " << Integrantes->integrante->cedula << endl;
+        cout << "Edad: " << Integrantes->integrante->edad << endl;
+        cout << "Horario disponible: " << endl;
+
+        horarioDisponible * horario = Integrantes->integrante->horarios;
+        if(horario != NULL){
+            imprimirHorarioDisponible(horario);
+        }
         Integrantes = Integrantes->sig;
     }
 
@@ -327,42 +347,35 @@ void imprimirGrupo(){
         cout << "Anio de funacion: " << primerGrupoMusical->anioDeFundacion << endl;
         cout << "Director: " << primerGrupoMusical->director->nombre << endl;
         cout << "Integrantes: "<< endl;
-        if(primerGrupoMusical->integrates != NULL){
-            imprimirIntegrantes(primerGrupoMusical->integrates);
+        grupoMusical* tempG = primerGrupoMusical;
+        if(tempG->integrates == NULL){
+            cout << "Sin integrantes"<<endl;
         }
-        primerGrupoMusical = primerGrupoMusical->sig;
-    }
-}
+        else{
+            cout << "--------------------------Integrantes--------------------------"<<endl;
+            subListaIntegrantes * Integrantes = primerGrupoMusical->integrates;
+            while(Integrantes != NULL){
+            cout << "-------------Integrante-------------"<<endl;
+            cout << "Nombre: " << Integrantes->integrante->nombre << endl;
+            cout << "Cedula: " << Integrantes->integrante->cedula << endl;
+            cout << "Edad: " << Integrantes->integrante->edad << endl;
+            cout << "Horario disponible: " << endl;
 
-void imprimirGrupoMusical(grupoMusical * grupo){
-    if(grupo == NULL)
-        std::cout<< "\nNo hay grupos\n";
-    else{
-        grupoMusical * tempG = grupo;
-        cout << "--------------------------Grupos--------------------------"<<endl;
-        while(tempG->sig!=NULL){
-            cout << "-------------Grupo-------------"<<endl;
-            cout << "Nombre: " << tempG->nombre << endl;
-            cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
-            cout << "Director: " << tempG->director->nombre << endl;
-            cout << "Integrantes: "<< endl;
-            if(tempG->integrates != NULL){
-                imprimirIntegrantes(tempG->integrates);
+            horarioDisponible * horario = Integrantes->integrante->horarios;
+            if(horario != NULL){
+                imprimirHorarioDisponible(horario);
             }
-
-            tempG = tempG->sig;
+            else{
+                cout<< "sin asignar" << endl;
+            }
+            Integrantes = Integrantes->sig;
+            }
+        primerGrupoMusical = primerGrupoMusical->sig;
         }
-        cout << "-------------Grupo-------------"<<endl;
-        cout << "Anio de funacion: " << tempG->anioDeFundacion << endl;
-        cout << "Nombre: " << tempG->nombre << endl;
-        cout << "Director: " << tempG->director->nombre << endl;
-        cout << "Integrantes: "<< endl;
-        if(tempG->integrates != NULL){
-                imprimirIntegrantes(tempG->integrates);
-        }
-
     }
 }
+
+
 //----------------Imprimir Eventos----------------
 void imprimirEventos() {
     evento* actual = primerEvento;
@@ -503,11 +516,11 @@ void menuReportes() {
         }
 
         else if(op == 2){
-
+            imprimirListaPersona();
         }
 
         else if(op == 3){
-
+            imprimirGrupo();
         }
 
         else if(op == 4){
@@ -540,6 +553,8 @@ void cargarDatos(){
     insertarDirectoraGrupoMusical("208260603","Ajenos");
     insertarDirectoraGrupoMusical("302540673","Morat");
 
+    insertarIntegranteEnGrupo("603210123","Ajenos");
+    insertarIntegranteEnGrupo("104820912","Morat");
 
     insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
 
