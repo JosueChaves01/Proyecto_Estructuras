@@ -512,6 +512,37 @@ void menuConsultas() {
     }
 }
 
+//***************************************FUBCIONES CONSULTAS*****************
+//---------------------PERSONA CON MAS PARTICIPACIONES EN EVENTOS---------------
+void personaMasParticipaciones(historiaEventos *primerHistorial) {
+    persona* p = primeraPersona;
+    int maxParticipaciones = 0;
+    persona* maxPersona = NULL;
+
+    while (p != NULL) {
+        int participaciones = 0;
+        historiaEventos* historia = p->evento;
+        while (historia != NULL) {
+            participaciones++;
+            historia = historia->sig;
+        }
+
+        if (participaciones > maxParticipaciones) {
+            maxParticipaciones = participaciones;
+            maxPersona = p;
+        }
+
+        p = p->sig;
+    }
+
+    if (maxPersona != NULL) {
+        cout << "La persona con mÃ¡s participaciones en eventos es " << maxPersona->nombre << " con " << maxParticipaciones << " participaciones." << endl;
+    }
+    else {
+        cout << "No hay ninguna persona registrada en el sistema." << endl;
+    }
+}
+
 //----------------MENU DE REPORTES-------------------------
 void menuReportes() {
     int op = 0;
@@ -591,11 +622,11 @@ bool buscarCedulaEnSublista(string cedula, subListaIntegrantes* sublista) {
     subListaIntegrantes* actual = sublista;
     while (actual != NULL) {
         if (actual->integrante->cedula == cedula) {
-            return true; // cédula encontrada en la sublista
+            return true; // cï¿½dula encontrada en la sublista
         }
         actual = actual->sig;
     }
-    return false; // cédula no encontrada en la sublista
+    return false; // cï¿½dula no encontrada en la sublista
 }
 
 int main()
