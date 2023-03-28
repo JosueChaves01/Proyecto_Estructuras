@@ -283,9 +283,7 @@ void insertarEvento(string nombre, string lugar, string hora, string dia, int du
     }
 }
 
-
-//--------------------Insercion lista doble ordenada por cedula Persona------------
-void insertarOrdenado(persona *& p, string nombre, string cedula, int edad) {
+void insertarPersona(persona *& p, string nombre, string cedula, int edad) {
     persona *nuevo = new persona(nombre, cedula, edad);
     if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
         p = nuevo;
@@ -472,6 +470,34 @@ void imprimirEventos() {
         actual = actual->sig;
     }
 }
+void imprimirEvento(evento * event) {
+    evento* actual = event;
+    cout << "--------------------------Eventos--------------------------"<<endl;
+    while (actual != NULL) {
+        cout << "-------------Evento-------------"<<endl;
+        cout << "Nombre: " << actual->nombre << endl;
+        cout << "Lugar: " << actual->lugar << endl;
+        cout << "Hora: " << actual->hora << endl;
+        cout << "Dia: " << actual->dia << endl;
+        cout << "Duracion: " << actual->duracion << endl;
+        actual = actual->sig;
+    }
+}
+//----------------Imprimir Historial de Eventos----------------
+
+void imprimirHistorialEventos(historiaEventos* primerHistorialEventos) {
+    historiaEventos* p = primerHistorialEventos;
+    do {
+        cout << "Grupo musical: " << p->grupo->nombre << endl;
+        cout << "Calificación: " << p->calificacion << endl;
+        cout << "Eventos: " << endl;
+        imprimirEvento(p->eventos);
+        cout << "Integrantes: " << endl;
+        imprimirIntegrantes(p->integrantes);
+        cout << endl;
+        p = p->sig;
+    } while (p != primerHistorialEventos);
+}
 
 
 //==============================MENUS Y SUB-MENUS=============================
@@ -626,10 +652,10 @@ void cargarDatos(){
     insercionAlInicioGrupoMusical("Ajenos","2007",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
 
-    insertarOrdenado(primeraPersona,"Josue","208260603",21);
-    insertarOrdenado(primeraPersona,"Carlos","302540673",20);
-    insertarOrdenado(primeraPersona,"Luis","603210123",19);
-    insertarOrdenado(primeraPersona,"Roberth","104820912",22);
+    insertarPersona(primeraPersona,"Josue","208260603",21);
+    insertarPersona(primeraPersona,"Carlos","302540673",20);
+    insertarPersona(primeraPersona,"Luis","603210123",19);
+    insertarPersona(primeraPersona,"Roberth","104820912",22);
 
 
     insertarDirectoraGrupoMusical("208260603","Ajenos");
@@ -653,6 +679,7 @@ void cargarDatos(){
 
 int main()
 {
+    imprimirHistorialEventos(primerHistorialEventos);
     cargarDatos();
     int op = 0;
 
