@@ -104,7 +104,7 @@ struct historiaEventos{
         grupo = g;
     }
 
-};
+}*primerHistorialEventos;
 
 struct instrumentos{
     //lista circular
@@ -123,6 +123,7 @@ struct instrumentos{
         ant = NULL;
     }
 };
+//==============================Funciones==============================
 
 //==============================Buscar==============================
 //-----------------buscar grupo musical-----------------
@@ -512,16 +513,17 @@ void menuConsultas() {
     }
 }
 
-//***************************************FUBCIONES CONSULTAS*****************
+//***************************************FUNCIONES CONSULTAS*****************
 //---------------------PERSONA CON MAS PARTICIPACIONES EN EVENTOS---------------
-void personaMasParticipaciones(historiaEventos *primerHistorial) {
-    persona* p = primeraPersona;
+void personaMasParticipaciones() {
+    persona* p =primeraPersona;
     int maxParticipaciones = 0;
     persona* maxPersona = NULL;
+    historiaEventos * historial = primerHistorialEventos;
 
     while (p != NULL) {
         int participaciones = 0;
-        historiaEventos* historia = p->evento;
+        historiaEventos* historia = historial;
         while (historia != NULL) {
             participaciones++;
             historia = historia->sig;
