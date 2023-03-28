@@ -82,10 +82,6 @@ struct grupoMusical{
         nombre = n;
         anioDeFundacion = a;
         sig = NULL;
-        persona * director = NULL;
-        subListaIntegrantes * integrates = NULL;
-        subListaEventos * eventos = NULL;
-        grupoMusical*sig = NULL;
     }
 }*primerGrupoMusical;
 
@@ -125,6 +121,56 @@ struct instrumentos{
 };
 //==============================Funciones==============================
 
+//---------------------BuscarPersona en integrantes---------------
+bool buscarCedulaEnSublista(string cedula, subListaIntegrantes* sublista) {
+    subListaIntegrantes* actual = sublista;
+    while (actual != NULL) {
+        if (actual->integrante->cedula == cedula) {
+            return true;
+        }
+        actual = actual->sig;
+    }
+    return false;
+}
+
+//---------------------PERSONA CON MAS PARTICIPACIONES EN EVENTOS---------------
+
+void personaMasParticipaciones() {
+    persona* p =primeraPersona;
+    int maxParticipaciones = 0;
+    persona* maxPersona = primeraPersona;
+    historiaEventos * primerH = primerHistorialEventos;
+
+
+
+    while (p != NULL) {
+        int participaciones = 0;
+        historiaEventos * tempH = primerH;
+        while (tempH != primerH->ant) {
+
+            if(buscarCedulaEnSublista(p->cedula,tempH->integrantes) == true){
+                participaciones++;
+            }
+            tempH = tempH->sig;
+        }
+
+        if (participaciones > maxParticipaciones) {
+            maxParticipaciones = participaciones;
+            maxPersona = p;
+        }
+
+        p = p->sig;
+    }
+
+    if (maxPersona != NULL) {
+        cout << "La persona con más participaciones en eventos es " << maxPersona->nombre << " con " << maxParticipaciones << " participaciones." << endl;
+    }
+    else {
+        cout << "No hay ninguna persona registrada en el sistema." << endl;
+    }
+}
+
+
 //==============================Buscar==============================
 //-----------------buscar grupo musical-----------------
 grupoMusical* buscarGrupoMusicalPorNombre(string nombre) {
@@ -138,7 +184,7 @@ grupoMusical* buscarGrupoMusicalPorNombre(string nombre) {
     return NULL;
 }
 
-//-----------------buscar persona
+//-----------------buscar persona-----------------
 persona* buscarPersona(string cedula, persona* primeraPersona) {
     persona* actual = primeraPersona;
     while (actual != NULL) {
@@ -150,7 +196,7 @@ persona* buscarPersona(string cedula, persona* primeraPersona) {
 
    return NULL;
 }
-
+//-----------------buscar Evento-----------------
 evento* buscarEventoPorNombre(string nombre, evento* inicio) {
     evento* actual = inicio;
     while (actual != NULL) {
@@ -161,6 +207,23 @@ evento* buscarEventoPorNombre(string nombre, evento* inicio) {
     }
     return NULL; // evento no encontrado
 }
+//-----------------buscar instrumento-----------------
+instrumentos* buscarInstrumento(string idBuscado, instrumentos* primerInstrumento) {
+    if (primerInstrumento == NULL) {
+        return NULL; // Si la lista está vacía, no hay elementos que buscar
+    }
+
+    instrumentos* instrumentoActual = primerInstrumento;
+    do {
+        if (instrumentoActual->id == idBuscado) {
+            return instrumentoActual; // Si se encuentra el instrumento, se devuelve el puntero a ese elemento
+        }
+        instrumentoActual = instrumentoActual->sig;
+    } while (instrumentoActual != primerInstrumento); // Se recorre la lista hasta volver al primer elemento
+
+    return NULL; // Si se llega al final del bucle sin encontrar el instrumento, se devuelve NULL
+}
+
 
 
 //===============================INSERCIONES DE LISTAS========================
@@ -471,7 +534,7 @@ void menuConsultas() {
         std::cin >> op;
 
         if(op == 1){
-
+            personaMasParticipaciones();
         }
 
         else if(op == 2){
@@ -510,38 +573,6 @@ void menuConsultas() {
             std::cout <<"<<<Opcion invalida. ingrese un valor valido>>>" <<std::endl;
         }
         int op = 0;
-    }
-}
-
-//***************************************FUNCIONES CONSULTAS*****************
-//---------------------PERSONA CON MAS PARTICIPACIONES EN EVENTOS---------------
-void personaMasParticipaciones() {
-    persona* p =primeraPersona;
-    int maxParticipaciones = 0;
-    persona* maxPersona = NULL;
-    historiaEventos * historial = primerHistorialEventos;
-
-    while (p != NULL) {
-        int participaciones = 0;
-        historiaEventos* historia = historial;
-        while (historia != NULL) {
-            participaciones++;
-            historia = historia->sig;
-        }
-
-        if (participaciones > maxParticipaciones) {
-            maxParticipaciones = participaciones;
-            maxPersona = p;
-        }
-
-        p = p->sig;
-    }
-
-    if (maxPersona != NULL) {
-        cout << "La persona con más participaciones en eventos es " << maxPersona->nombre << " con " << maxParticipaciones << " participaciones." << endl;
-    }
-    else {
-        cout << "No hay ninguna persona registrada en el sistema." << endl;
     }
 }
 
@@ -618,17 +649,6 @@ void cargarDatos(){
 
     insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
 
-}
-
-bool buscarCedulaEnSublista(string cedula, subListaIntegrantes* sublista) {
-    subListaIntegrantes* actual = sublista;
-    while (actual != NULL) {
-        if (actual->integrante->cedula == cedula) {
-            return true; // c�dula encontrada en la sublista
-        }
-        actual = actual->sig;
-    }
-    return false; // c�dula no encontrada en la sublista
 }
 
 int main()
