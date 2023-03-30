@@ -118,7 +118,7 @@ struct instrumentos{
         sig = NULL;
         ant = NULL;
     }
-};
+}*PrimerInstrumento;
 //==============================Funciones==============================
 
 //---------------------BuscarPersona en integrantes---------------
@@ -326,6 +326,22 @@ void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaF
     }
 }
 
+void insertarInstrumento(instrumentos** primero, string id, string nombre, string tipo) {
+    instrumentos* nuevo = new instrumentos(id, nombre, tipo);
+    if (*primero == NULL) {
+        // Si la lista está vacía, el nuevo elemento será el primer y el último
+        *primero = nuevo;
+        nuevo->sig = nuevo;
+        nuevo->ant = nuevo;
+    } else {
+        // Si la lista no está vacía, se inserta el nuevo elemento al final
+        instrumentos* ultimo = (*primero)->ant;
+        nuevo->sig = *primero;
+        nuevo->ant = ultimo;
+        (*primero)->ant = nuevo;
+        ultimo->sig = nuevo;
+    }
+}
 
 void agregarHorarioaPersonaManual(){
     string cedula;
@@ -372,7 +388,8 @@ void agregarHorarioaPersonaManual(){
 }
 
 //==============================Imprimir==============================
-//----------------imprimir Persona----------------
+//---------imprimir Horario Disponible-----------
+
 void imprimirHorarioDisponible(horarioDisponible* horario) {
     while (horario != NULL) {
         cout << "Dia: " << horario->dia << endl;
@@ -381,6 +398,7 @@ void imprimirHorarioDisponible(horarioDisponible* horario) {
         horario = horario->sig;
     }
 }
+//----------------imprimir Persona----------------
 
 void imprimirListaPersona() {
     cout << "--------------------------Personas--------------------------"<<endl;
@@ -498,8 +516,19 @@ void imprimirHistorialEventos(historiaEventos* primerHistorialEventos) {
         p = p->sig;
     } while (p != primerHistorialEventos);
 }
+//----------------Imprimir Instrumentos----------------
 
-
+void imprimirInstrumentos(instrumentos* primero) {
+    if (primero == NULL) {
+        cout << "La lista está vacía" << endl;
+        return;
+    }
+    instrumentos* actual = primero;
+    do {
+        cout << "ID: " << actual->id << ", Nombre: " << actual->nombre << ", Tipo: " << actual->tipo << endl;
+        actual = actual->sig;
+    } while (actual != primero);
+}
 //==============================MENUS Y SUB-MENUS=============================
 //-----------------Menu para ingresar y actualizar informacion--------------
 int main();
@@ -651,12 +680,37 @@ void menuReportes() {
 void cargarDatos(){
     insercionAlInicioGrupoMusical("Ajenos","2007",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Almendros","2012",primerGrupoMusical);
+
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
 
     insertarPersona(primeraPersona,"Josue","208260603",21);
     insertarPersona(primeraPersona,"Carlos","302540673",20);
     insertarPersona(primeraPersona,"Luis","603210123",19);
     insertarPersona(primeraPersona,"Roberth","104820912",22);
+    insertarPersona(primeraPersona,"Steve","209134609",22);
+    insertarPersona(primeraPersona,"Ronaldo","745813926",19);
+    insertarPersona(primeraPersona,"Mario","581934762",23);
+    insertarPersona(primeraPersona,"Aberto","674219085",24);
+    insertarPersona(primeraPersona,"Diego","420691337",17);
+    insertarPersona(primeraPersona,"Rodrigo","567891234",20);
 
+    insertarInstrumento(&PrimerInstrumento,"1","trompeta","viento");
+    insertarInstrumento(&PrimerInstrumento,"2","trombon","viento");
+    insertarInstrumento(&PrimerInstrumento,"3","saxofon","viento");
+    insertarInstrumento(&PrimerInstrumento,"4","violin","cuerdas");
+    insertarInstrumento(&PrimerInstrumento,"5","guitarra","cuerdas");
+    insertarInstrumento(&PrimerInstrumento,"6","ukelele","cuerdas");
+    insertarInstrumento(&PrimerInstrumento,"7","bateria","percusion");
+    insertarInstrumento(&PrimerInstrumento,"8","Bombo","percusion");
+    insertarInstrumento(&PrimerInstrumento,"9","triangulo","percusion");
+    insertarInstrumento(&PrimerInstrumento,"10","bajo","electricos");
 
     insertarDirectoraGrupoMusical("208260603","Ajenos");
     insertarDirectoraGrupoMusical("302540673","Morat");
