@@ -120,6 +120,31 @@ struct instrumentos{
     }
 }*PrimerInstrumento;
 //==============================Funciones==============================
+//---------------------Verificar datos repetidos grupo---------------
+
+bool verificarGrupo(string nombre){
+    grupoMusical *actual = primerGrupoMusical;
+    while (actual != NULL) {
+        if (actual->nombre == nombre) {
+            return false; // Nombre encontrado, no es único
+        }
+        actual = actual->sig;
+    }
+    return true; // Nombre no encontrado, es único
+}
+//---------------------Verificar datos repetidos persona---------------
+
+bool verificarPersonaPorCedula(string cedula){
+    persona *actual = primeraPersona;
+    while (actual != NULL) {
+        if (actual->cedula == cedula) {
+            return false;
+        }
+        actual = actual->sig;
+    }
+    return true;
+}
+
 
 //---------------------BuscarPersona en integrantes---------------
 bool buscarCedulaEnSublista(string cedula, subListaIntegrantes* sublista) {
@@ -201,27 +226,26 @@ evento* buscarEventoPorNombre(string nombre, evento* inicio) {
     evento* actual = inicio;
     while (actual != NULL) {
         if (actual->nombre == nombre) {
-            return actual; // evento encontrado
+            return actual;
         }
         actual = actual->sig;
     }
-    return NULL; // evento no encontrado
+    return NULL;
 }
 //-----------------buscar instrumento-----------------
 instrumentos* buscarInstrumento(string idBuscado, instrumentos* primerInstrumento) {
     if (primerInstrumento == NULL) {
-        return NULL; // Si la lista está vacía, no hay elementos que buscar
+        return NULL;
     }
 
     instrumentos* instrumentoActual = primerInstrumento;
     do {
         if (instrumentoActual->id == idBuscado) {
-            return instrumentoActual; // Si se encuentra el instrumento, se devuelve el puntero a ese elemento
+            return instrumentoActual;
         }
         instrumentoActual = instrumentoActual->sig;
-    } while (instrumentoActual != primerInstrumento); // Se recorre la lista hasta volver al primer elemento
-
-    return NULL; // Si se llega al final del bucle sin encontrar el instrumento, se devuelve NULL
+    } while (instrumentoActual != primerInstrumento);
+    return NULL;
 }
 
 
@@ -229,9 +253,11 @@ instrumentos* buscarInstrumento(string idBuscado, instrumentos* primerInstrument
 //===============================INSERCIONES DE LISTAS========================
 //--------------------Insercion lista simple grupo musicar------------
 void insercionAlInicioGrupoMusical(string nombre , string anioDeFundacion, grupoMusical *& grupo){
+    if(verificarGrupo(nombre) == true){
     grupoMusical* nuevoGrupo = new grupoMusical(nombre, anioDeFundacion);
     nuevoGrupo-> sig = grupo;
     grupo = nuevoGrupo;
+    }
 }
 
 void insertarDirectoraGrupoMusical(string cedula, string nombre){
@@ -284,27 +310,29 @@ void insertarEvento(string nombre, string lugar, string hora, string dia, int du
 }
 
 void insertarPersona(persona *& p, string nombre, string cedula, int edad) {
-    persona *nuevo = new persona(nombre, cedula, edad);
-    if (p == NULL) {  // Si la lista esta vacia, el nuevo nodo sera el primer elemento
-        p = nuevo;
-        return;
+    if(verificarPersonaPorCedula(cedula)==true){
+        persona *nuevo = new persona(nombre, cedula, edad);
+        if (p == NULL) {
+            p = nuevo;
+            return;
+        }
+        if (cedula < p->cedula) {
+            nuevo->sig = p;
+            p->ant = nuevo;
+            p = nuevo;
+            return;
+        }
+        persona *actual = p;
+        while (actual->sig != NULL && actual->sig->cedula < cedula) {
+            actual = actual->sig;
+        }
+        nuevo->sig = actual->sig;
+        if (actual->sig != NULL) {
+            actual->sig->ant = nuevo;
+        }
+        actual->sig = nuevo;
+        nuevo->ant = actual;
     }
-    if (cedula < p->cedula) {  // Si la cedula del nuevo nodo es menor que la del primer elemento
-        nuevo->sig = p;
-        p->ant = nuevo;
-        p = nuevo;
-        return;
-    }
-    persona *actual = p;
-    while (actual->sig != NULL && actual->sig->cedula < cedula) {  // Buscamos la posicion donde insertar el nuevo nodo
-        actual = actual->sig;
-    }
-    nuevo->sig = actual->sig;
-    if (actual->sig != NULL) {
-        actual->sig->ant = nuevo;
-    }
-    actual->sig = nuevo;
-    nuevo->ant = actual;
 }
 void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaFinal) {
     persona* per = buscarPersona(cedula, primeraPersona);
@@ -435,24 +463,30 @@ void imprimirIntegrantes(subListaIntegrantes * Integrantes){
     }
 
 }
-void imprimirEvento(evento * event);
+void imprimirEvento(subListaEventos * event);
 
 //----------------Imprimir Grupo----------------
 void imprimirListaGruposMusicales(grupoMusical* primerGrupo) {
     if (primerGrupo == NULL) {
-        cout << "La lista está vacía." << endl;
+        cout << "La lista está vacia." << endl;
         return;
     }
 
     grupoMusical* p = primerGrupo;
     while (p != NULL) {
         cout << "Nombre: " << p->nombre << endl;
-        cout << "Año de fundación: " << p->anioDeFundacion << endl;
+        cout << "Anio de fundacinn: " << p->anioDeFundacion << endl;
         if(p->director != NULL){
         cout << "Director: " << p->director->nombre << endl;
         }
+        if(p->integrates != NULL){
         cout << "Integrantes: " << endl;
         imprimirIntegrantes(p->integrates);
+        }
+        if(p->eventos != NULL){
+        cout << "Eventos: " << endl;
+        imprimirEvento(p->eventos);
+        }
         p = p->sig;
     }
 }
@@ -474,7 +508,7 @@ void imprimirEventos() {
     }
 }
 void imprimirEvento(evento * event) {
-    evento* actual = event;
+    evento * actual = event;
     cout << "--------------------------Eventos--------------------------"<<endl;
     while (actual != NULL) {
         cout << "-------------Evento-------------"<<endl;
@@ -483,6 +517,19 @@ void imprimirEvento(evento * event) {
         cout << "Hora: " << actual->hora << endl;
         cout << "Dia: " << actual->dia << endl;
         cout << "Duracion: " << actual->duracion << endl;
+        actual = actual->sig;
+    }
+}
+void imprimirEvento(subListaEventos * event) {
+    subListaEventos* actual = event;
+    cout << "--------------------------Eventos--------------------------"<<endl;
+    while (actual != NULL) {
+        cout << "-------------Evento-------------"<<endl;
+        cout << "Nombre: " << actual->e->nombre << endl;
+        cout << "Lugar: " << actual->e->lugar << endl;
+        cout << "Hora: " << actual->e->hora << endl;
+        cout << "Dia: " << actual->e->dia << endl;
+        cout << "Duracion: " << actual->e->duracion << endl;
         actual = actual->sig;
     }
 }
@@ -638,12 +685,14 @@ void menuReportes() {
 
         if(op == 1){
 
-            std::cout <<"Lista Persona"<<endl;
+            std::cout <<"\nLista Persona"<<endl;
             imprimirListaPersona();
-            std::cout <<"Lista Eventos"<<endl;
+            std::cout <<"\nLista Eventos"<<endl;
             imprimirEventos();
-            std::cout <<"Lista Grupos"<<endl;
+            std::cout <<"\nLista Grupos"<<endl;
             imprimirListaGruposMusicales(primerGrupoMusical);
+            std::cout <<"\nLista instrumentos"<<endl;
+            imprimirInstrumentos(PrimerInstrumento);
 
         }
 
@@ -676,14 +725,13 @@ void cargarDatos(){
     insercionAlInicioGrupoMusical("Ajenos","2007",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Almendros","2012",primerGrupoMusical);
-
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
-    insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Radiohead","1985",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Metallica","1981",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Nirvana","1987",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Coldplay","1996",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Muse","1994",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Korn","1993",primerGrupoMusical);
+    insercionAlInicioGrupoMusical("Oasis","1991",primerGrupoMusical);
 
     insertarPersona(primeraPersona,"Josue","208260603",21);
     insertarPersona(primeraPersona,"Carlos","302540673",20);
