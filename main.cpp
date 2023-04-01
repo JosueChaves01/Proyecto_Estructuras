@@ -435,43 +435,28 @@ void imprimirIntegrantes(subListaIntegrantes * Integrantes){
     }
 
 }
-
+void imprimirEvento(evento * event);
 
 //----------------Imprimir Grupo----------------
-void imprimirGrupo(){
-    while(primerGrupoMusical != NULL){
-        cout << "-------------Grupo-------------"<<endl;
-        cout << "Nombre: " << primerGrupoMusical->nombre << endl;
-        cout << "Anio de funacion: " << primerGrupoMusical->anioDeFundacion << endl;
-        cout << "Director: " << primerGrupoMusical->director->nombre << endl;
-        cout << "Integrantes: "<< endl;
-        grupoMusical* tempG = primerGrupoMusical;
-        if(tempG->integrates == NULL){
-            cout << "Sin integrantes"<<endl;
-        }
-        else{
-            cout << "--------------------------Integrantes--------------------------"<<endl;
-            subListaIntegrantes * Integrantes = primerGrupoMusical->integrates;
-            while(Integrantes != NULL){
-            cout << "-------------Integrante-------------"<<endl;
-            cout << "Nombre: " << Integrantes->integrante->nombre << endl;
-            cout << "Cedula: " << Integrantes->integrante->cedula << endl;
-            cout << "Edad: " << Integrantes->integrante->edad << endl;
-            cout << "Horario disponible: " << endl;
+void imprimirListaGruposMusicales(grupoMusical* primerGrupo) {
+    if (primerGrupo == NULL) {
+        cout << "La lista está vacía." << endl;
+        return;
+    }
 
-            horarioDisponible * horario = Integrantes->integrante->horarios;
-            if(horario != NULL){
-                imprimirHorarioDisponible(horario);
-            }
-            else{
-                cout<< "sin asignar" << endl;
-            }
-            Integrantes = Integrantes->sig;
-            }
-        primerGrupoMusical = primerGrupoMusical->sig;
+    grupoMusical* p = primerGrupo;
+    while (p != NULL) {
+        cout << "Nombre: " << p->nombre << endl;
+        cout << "Año de fundación: " << p->anioDeFundacion << endl;
+        if(p->director != NULL){
+        cout << "Director: " << p->director->nombre << endl;
         }
+        cout << "Integrantes: " << endl;
+        imprimirIntegrantes(p->integrates);
+        p = p->sig;
     }
 }
+
 
 
 //----------------Imprimir Eventos----------------
@@ -504,17 +489,22 @@ void imprimirEvento(evento * event) {
 //----------------Imprimir Historial de Eventos----------------
 
 void imprimirHistorialEventos(historiaEventos* primerHistorialEventos) {
-    historiaEventos* p = primerHistorialEventos;
-    do {
-        cout << "Grupo musical: " << p->grupo->nombre << endl;
-        cout << "Calificación: " << p->calificacion << endl;
-        cout << "Eventos: " << endl;
-        imprimirEvento(p->eventos);
-        cout << "Integrantes: " << endl;
-        imprimirIntegrantes(p->integrantes);
-        cout << endl;
-        p = p->sig;
-    } while (p != primerHistorialEventos);
+    historiaEventos* historial = primerHistorialEventos->sig;
+    if(primerHistorialEventos != NULL){
+        cout << "No hay ningun dato regristrado" << endl;
+    }
+    else{
+        do {
+            cout << "Grupo musical: " << historial->grupo->nombre << endl;
+            cout << "Calificación: " << historial->calificacion << endl;
+            cout << "Eventos: " << endl;
+            imprimirEvento(historial->eventos);
+            cout << "Integrantes: " << endl;
+            imprimirIntegrantes(historial->integrantes);
+            cout << endl;
+            historial = historial->sig;
+        } while (historial != primerHistorialEventos);
+    }
 }
 //----------------Imprimir Instrumentos----------------
 
@@ -647,9 +637,14 @@ void menuReportes() {
         std::cin >> op;
 
         if(op == 1){
+
+            std::cout <<"Lista Persona"<<endl;
             imprimirListaPersona();
+            std::cout <<"Lista Eventos"<<endl;
             imprimirEventos();
-            imprimirGrupo();
+            std::cout <<"Lista Grupos"<<endl;
+            imprimirListaGruposMusicales(primerGrupoMusical);
+
         }
 
         else if(op == 2){
@@ -657,7 +652,7 @@ void menuReportes() {
         }
 
         else if(op == 3){
-            imprimirGrupo();
+            imprimirListaGruposMusicales(primerGrupoMusical);
         }
 
         else if(op == 4){
@@ -733,7 +728,6 @@ void cargarDatos(){
 
 int main()
 {
-    imprimirHistorialEventos(primerHistorialEventos);
     cargarDatos();
     int op = 0;
 
