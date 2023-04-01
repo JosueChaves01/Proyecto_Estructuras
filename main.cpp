@@ -18,14 +18,41 @@ struct horarioDisponible{
         sig = NULL;
     }
 };
+struct instrumentos{
+    //lista circular
+    string id;
+    string nombre;
+    string tipo;
 
+    instrumentos*sig;
+    instrumentos*ant;
+
+    instrumentos(string i, string n, string t){
+        id = i;
+        nombre = n;
+        tipo = t;
+        sig = NULL;
+        ant = NULL;
+    }
+}*PrimerInstrumento;
+
+struct subListaInstrumentos{
+    instrumentos * instrumento = NULL;
+    subListaInstrumentos * sig = NULL;
+};
+
+struct subListaInstrumentosSolicitados{
+    int cant = 0;
+    instrumentos * instrumento = NULL;
+    subListaInstrumentosSolicitados * sig = NULL;
+};
 struct persona{
     //lista doble
     string nombre;
     string cedula;
     int edad;
     horarioDisponible* horarios=NULL;
-
+    subListaInstrumentos * instrumentos= NULL;
     persona*sig;
     persona*ant;
 
@@ -50,7 +77,8 @@ struct evento{
     string hora;
     string dia;
     int duracion;
-    evento*sig;
+    evento*sig = NULL;
+    subListaInstrumentosSolicitados * instrumentosSolicitados = NULL;
 
     evento(string n, string l, string h, string d, int dur){
         nombre = n;
@@ -63,8 +91,8 @@ struct evento{
 }*primerEvento;
 
 struct subListaEventos{
-    evento * e;
-    subListaEventos * sig;
+    evento * e = NULL;
+    subListaEventos * sig = NULL;
 };
 
 struct grupoMusical{
@@ -75,7 +103,7 @@ struct grupoMusical{
 
     persona * director=NULL;
     subListaIntegrantes * integrates=NULL;
-    subListaEventos * eventos=NULL;
+    subListaEventos * eventos = NULL;
     grupoMusical*sig=NULL;
 
     grupoMusical(string n, string a){
@@ -102,23 +130,6 @@ struct historiaEventos{
 
 }*primerHistorialEventos;
 
-struct instrumentos{
-    //lista circular
-    string id;
-    string nombre;
-    string tipo;
-
-    instrumentos*sig;
-    instrumentos*ant;
-
-    instrumentos(string i, string n, string t){
-        id = i;
-        nombre = n;
-        tipo = t;
-        sig = NULL;
-        ant = NULL;
-    }
-}*PrimerInstrumento;
 //==============================Funciones==============================
 //---------------------Verificar datos repetidos grupo---------------
 
@@ -334,6 +345,7 @@ void insertarPersona(persona *& p, string nombre, string cedula, int edad) {
         nuevo->ant = actual;
     }
 }
+
 void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaFinal) {
     persona* per = buscarPersona(cedula, primeraPersona);
     if (per == NULL) {
@@ -357,12 +369,10 @@ void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaF
 void insertarInstrumento(instrumentos** primero, string id, string nombre, string tipo) {
     instrumentos* nuevo = new instrumentos(id, nombre, tipo);
     if (*primero == NULL) {
-        // Si la lista está vacía, el nuevo elemento será el primer y el último
         *primero = nuevo;
         nuevo->sig = nuevo;
         nuevo->ant = nuevo;
     } else {
-        // Si la lista no está vacía, se inserta el nuevo elemento al final
         instrumentos* ultimo = (*primero)->ant;
         nuevo->sig = *primero;
         nuevo->ant = ultimo;
@@ -415,6 +425,84 @@ void agregarHorarioaPersonaManual(){
     }
 }
 
+
+void insertarInstrumentoaPersona(string cedula, string id){
+    instrumentos * instrumento = buscarInstrumento(id,PrimerInstrumento);
+    persona *p = buscarPersona(cedula,primeraPersona);
+    if(instrumento == NULL){
+        cout << "No existe el instrumento"<< endl;
+    }
+    if(p == NULL){
+        cout << "No existe la persona"<< endl;
+    }
+    else{
+        subListaInstrumentos * nodo = new subListaInstrumentos;
+        nodo->instrumento = instrumento;
+        if(p->instrumentos == NULL){
+            p->instrumentos = nodo;
+        }
+        else{
+            subListaInstrumentos * tempI = p->instrumentos;
+            while(tempI->sig != NULL){
+                tempI = tempI->sig;
+            }
+            tempI->sig = nodo;
+
+        }
+    }
+}
+
+void insertarEventoaGrupo(string nombre, string nombreE){
+    evento * ev = buscarEventoPorNombre(nombreE,primerEvento);
+    grupoMusical * grupo = buscarGrupoMusicalPorNombre(nombre);
+    if(ev == NULL){
+        cout << "No existe el evento"<< endl;
+    }
+    if(grupo == NULL){
+        cout << "No existe el grupo"<< endl;
+    }
+    else{
+
+        subListaEventos * nodo = new subListaEventos;
+        nodo->e = ev;
+        if(grupo->eventos == NULL){
+            grupo->eventos = nodo;
+        }
+        else{
+            subListaEventos * tempE = grupo->eventos;
+            while(tempE->sig != NULL){
+                tempE = tempE->sig;
+            }
+            tempE->sig = nodo;
+        }
+    }
+}
+void insertarInstrumentosaGrupo(string id, int cant,string nombreE){
+    instrumentos * inst = buscarInstrumento(id,PrimerInstrumento);
+    evento * ev = buscarEventoPorNombre(nombreE,primerEvento);
+    if(inst == NULL){
+        cout << "No existe el instrumento"<< endl;
+    }
+    if(ev == NULL){
+        cout << "No existe el evento"<< endl;
+    }
+    else{
+        subListaInstrumentosSolicitados * nodo = new subListaInstrumentosSolicitados;
+        nodo->cant = cant;
+        nodo->instrumento = inst;
+        if(ev->instrumentosSolicitados == NULL){
+            ev->instrumentosSolicitados = nodo;
+        }
+        else{
+            subListaInstrumentosSolicitados * tempI = ev->instrumentosSolicitados;
+            while(tempI->sig != NULL){
+                tempI = tempI->sig;
+            }
+            tempI->sig = nodo;
+        }
+    }
+}
+
 //==============================Imprimir==============================
 //---------imprimir Horario Disponible-----------
 
@@ -426,6 +514,33 @@ void imprimirHorarioDisponible(horarioDisponible* horario) {
         horario = horario->sig;
     }
 }
+//----------------Imprimir Sublista Instrumentos----------------
+
+void imprimirSubListaInstrumentos(subListaInstrumentos* lista) {
+    while (lista != NULL) {
+        cout << "Instrumento: " << lista->instrumento->nombre << endl;
+        lista = lista->sig;
+    }
+
+}
+//----------------Imprimir Sublista Instrumentos Solicitados----------------
+
+void imprimirSubListaInstrumentosSolicitados(subListaInstrumentosSolicitados* lista) {
+    while (lista != NULL) {
+        cout << "Instrumento: " << lista->instrumento->nombre << endl;
+        cout << "cantidad: " << lista->cant << endl;
+        lista = lista->sig;
+    }
+
+}
+//----------------Imprimir Sublista eventos----------------
+
+void imprimirSubListaEventos(subListaEventos * lista) {
+    while (lista != NULL) {
+        cout << "Evento: " << lista->e->nombre << endl;
+        lista = lista->sig;
+    }
+}
 //----------------imprimir Persona----------------
 
 void imprimirListaPersona() {
@@ -435,12 +550,16 @@ void imprimirListaPersona() {
         cout << "Nombre: " << primeraPersona->nombre << endl;
         cout << "Cedula: " << primeraPersona->cedula << endl;
         cout << "Edad: " << primeraPersona->edad << endl;
-        cout << "Horario disponible: " << endl;
-
         horarioDisponible * horario = primeraPersona->horarios;
         if(horario != NULL){
+            cout << "Horario disponible: " << endl;
             imprimirHorarioDisponible(horario);
         }
+        if(primeraPersona->instrumentos != NULL){
+        cout << "Instrumentos que toca: " << endl;
+            imprimirSubListaInstrumentos(primeraPersona->instrumentos);
+        }
+
         cout << endl;
         primeraPersona = primeraPersona->sig;
     }
@@ -467,6 +586,8 @@ void imprimirEvento(subListaEventos * event);
 
 //----------------Imprimir Grupo----------------
 void imprimirListaGruposMusicales(grupoMusical* primerGrupo) {
+    cout << "--------------------------Grupos--------------------------"<<endl;
+
     if (primerGrupo == NULL) {
         cout << "La lista está vacia." << endl;
         return;
@@ -474,18 +595,21 @@ void imprimirListaGruposMusicales(grupoMusical* primerGrupo) {
 
     grupoMusical* p = primerGrupo;
     while (p != NULL) {
+        cout << "-------------Grupo-------------"<<endl;
+
         cout << "Nombre: " << p->nombre << endl;
         cout << "Anio de fundacinn: " << p->anioDeFundacion << endl;
         if(p->director != NULL){
-        cout << "Director: " << p->director->nombre << endl;
+            cout << "Director: " << p->director->nombre << endl;
         }
         if(p->integrates != NULL){
-        cout << "Integrantes: " << endl;
-        imprimirIntegrantes(p->integrates);
+            cout << "Integrantes: " << endl;
+            imprimirIntegrantes(p->integrates);
         }
         if(p->eventos != NULL){
-        cout << "Eventos: " << endl;
-        imprimirEvento(p->eventos);
+            subListaEventos * lista = p->eventos;
+            cout << "Eventos: " << endl;
+            imprimirSubListaEventos(p->eventos);
         }
         p = p->sig;
     }
@@ -504,6 +628,10 @@ void imprimirEventos() {
         cout << "Hora: " << actual->hora << endl;
         cout << "Dia: " << actual->dia << endl;
         cout << "Duracion: " << actual->duracion << endl;
+        if(actual->instrumentosSolicitados != NULL){
+            cout << "instrumentos solicitados: " << endl;
+            imprimirSubListaInstrumentosSolicitados(actual->instrumentosSolicitados);
+        }
         actual = actual->sig;
     }
 }
@@ -553,6 +681,7 @@ void imprimirHistorialEventos(historiaEventos* primerHistorialEventos) {
         } while (historial != primerHistorialEventos);
     }
 }
+
 //----------------Imprimir Instrumentos----------------
 
 void imprimirInstrumentos(instrumentos* primero) {
@@ -566,6 +695,118 @@ void imprimirInstrumentos(instrumentos* primero) {
         actual = actual->sig;
     } while (actual != primero);
 }
+
+void personaConMasInstrumentos(persona* primeraPersona) {
+    persona* personaActual = primeraPersona;
+    persona* personaConMas = NULL;
+    int maxInstrumentos = 0;
+
+    while (personaActual != NULL) {
+        subListaInstrumentos* sublistaActual = personaActual->instrumentos;
+        int numInstrumentos = 0;
+
+        while (sublistaActual != NULL) {
+            numInstrumentos++;
+            sublistaActual = sublistaActual->sig;
+        }
+
+        if (numInstrumentos > maxInstrumentos) {
+            maxInstrumentos = numInstrumentos;
+            personaConMas = personaActual;
+        }
+
+        personaActual = personaActual->sig;
+    }
+
+    cout << "\nLa persona que toca mas instrumentos es: " << personaConMas->nombre << " , toca: " << maxInstrumentos << " instrumentos" << endl;
+}
+
+
+//===================================Borrar===================================
+//----------------Borrar Persona----------------
+void borrarPersona(string cedulaBuscada, persona*& primerPersona) {
+    persona* personaActual = primerPersona;
+
+    while (personaActual != NULL) {
+        if (personaActual->cedula == cedulaBuscada) {
+
+            if (personaActual == primeraPersona) {
+                primeraPersona = personaActual->sig;
+                if (primeraPersona != NULL) {
+                    primeraPersona->ant = NULL;
+                }
+            }
+
+            else if (personaActual->sig == NULL) {
+                personaActual->ant->sig = NULL;
+            }
+
+            else {
+                personaActual->sig->ant = personaActual->ant;
+                personaActual->ant->sig = personaActual->sig;
+            }
+
+
+            delete personaActual;
+
+
+            return;
+        }
+        personaActual = personaActual->sig;
+    }
+
+    cout << "No se encontró a la persona con la cédula " << cedulaBuscada << "." << endl;
+}
+
+//----------------Borrar Evento----------------
+
+void borrarEvento(string nombreBuscado, evento*& primerEvento) {
+    evento* eventoActual = primerEvento;
+    evento* eventoAnterior = NULL;
+
+    while (eventoActual != NULL) {
+        if (eventoActual->nombre == nombreBuscado) {
+            if (eventoActual == primerEvento) {
+                primerEvento = eventoActual->sig;
+            }
+
+            else {
+                eventoAnterior->sig = eventoActual->sig;
+            }
+            delete eventoActual;
+            return;
+        }
+        eventoAnterior = eventoActual;
+        eventoActual = eventoActual->sig;
+    }
+    cout << "No se encontró el evento con el nombre " << nombreBuscado << "." << endl;
+}
+
+//----------------Borrar Grupo----------------
+
+void eliminarGrupoMusical(string nombreBuscado, grupoMusical*& primerGrupoMusical) {
+    grupoMusical* grupoMusicalActual = primerGrupoMusical;
+    grupoMusical* grupoMusicalAnterior = NULL;
+
+    while (grupoMusicalActual != NULL) {
+        if (grupoMusicalActual->nombre == nombreBuscado) {
+            if (grupoMusicalActual == primerGrupoMusical) {
+                primerGrupoMusical = grupoMusicalActual->sig;
+            }
+
+            else {
+                grupoMusicalAnterior->sig = grupoMusicalActual->sig;
+            }
+            delete grupoMusicalActual;
+            return;
+        }
+        grupoMusicalAnterior = grupoMusicalActual;
+        grupoMusicalActual = grupoMusicalActual->sig;
+    }
+     cout << "No se encontró el grupo musical con el nombre " << nombreBuscado << "." << endl;
+}
+
+
 //==============================MENUS Y SUB-MENUS=============================
 //-----------------Menu para ingresar y actualizar informacion--------------
 int main();
@@ -646,7 +887,7 @@ void menuConsultas() {
         }
 
         else if(op == 6){
-
+            personaConMasInstrumentos(primeraPersona);
         }
 
         else if (op == 7) {
@@ -755,7 +996,16 @@ void cargarDatos(){
     insertarInstrumento(&PrimerInstrumento,"9","triangulo","percusion");
     insertarInstrumento(&PrimerInstrumento,"10","bajo","electricos");
 
-    insertarDirectoraGrupoMusical("208260603","Ajenos");
+    insertarInstrumentoaPersona("302540673","1");
+    insertarInstrumentoaPersona("302540673","2");
+
+    insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
+
+    insertarEventoaGrupo("Ajenos","BaileFortuna");
+
+    insertarInstrumentosaGrupo("3",3,"BaileFortuna");
+
+    insertarDirectoraGrupoMusical("603210123","Ajenos");
     insertarDirectoraGrupoMusical("302540673","Morat");
 
     insertarIntegranteEnGrupo("603210123","Ajenos");
@@ -770,7 +1020,7 @@ void cargarDatos(){
     agregarHorarioaPersona("104820912", "Miercoles", 8000, 1800);
     agregarHorarioaPersona("104820912", "Viernes", 7030, 1530);
 
-    insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
+    borrarPersona("208260603",primeraPersona);
 
 }
 
