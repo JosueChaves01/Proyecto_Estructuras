@@ -721,6 +721,64 @@ void personaConMasInstrumentos(persona* primeraPersona) {
     cout << "\nLa persona que toca mas instrumentos es: " << personaConMas->nombre << " , toca: " << maxInstrumentos << " instrumentos" << endl;
 }
 
+//=================PERSONA PERTENECIENTE A MAS GRUPOS MUSICALES========================
+void personaEnMasGrupos(persona* primeraPersona) {
+    int maxGrupos = 0;
+    persona* personaMasGrupos = NULL;
+
+    // Recorremos la lista de grupos musicales
+    for (grupoMusical* gm = primerGrupoMusical; gm != NULL; gm = gm->sig) {
+        // Recorremos la sublista de integrantes de cada grupo musical
+        for (subListaIntegrantes* si = gm->integrates; si != NULL; si = si->sig) {
+            int numGrupos = 0;
+            persona* p = si->integrante;
+            
+            // Contamos cuántos grupos tiene la persona
+            for (subListaIntegrantes* si2 = p->grupos; si2 != NULL; si2 = si2->sig) {
+                numGrupos++;
+            }
+            
+            // Si tiene más grupos que la persona con más grupos, la almacenamos
+            if (numGrupos > maxGrupos) {
+                maxGrupos = numGrupos;
+                personaMasGrupos = p;
+            }
+        }
+    }
+
+    // Imprimimos el nombre de la persona con más grupos musicales
+    if (personaMasGrupos != NULL) {
+        cout << "La persona con más grupos musicales es: " << personaMasGrupos->nombre << endl;
+    } else {
+        cout << "No se encontró ninguna persona en la lista de grupos musicales." << endl;
+    }
+}
+
+//=================GRUPO CON MAS EVENTOS======================
+void grupoMasEventos(grupoMusical* grupo) {
+    grupoMusical* grupoActual = primerGrupoMusical;
+    grupoMusical* grupoConMas = NULL;
+    int maxEventos = 0;
+
+    while(grupo != NULL) {
+        subListaEventos* sublistaAcual = grupoActual ->eventos;
+        int numEventos = 0;
+
+        while(sublistaAcual != NULL) {
+            numEventos++;
+            sublistaAcual = sublistaAcual->sig;
+        }
+
+        if(numEventos > maxEventos){
+            maxEventos = numEventos;
+            grupoConMas = grupoActual;
+        }
+
+        grupoActual = grupoActual->sig;
+
+        cout <<"El grupo con mas eventos es: " <<grupoConMas->nombre <<" con " <<maxEventos <<" eventos" <<endl;
+    }
+}
 
 //===================================Borrar===================================
 //----------------Borrar Persona----------------
