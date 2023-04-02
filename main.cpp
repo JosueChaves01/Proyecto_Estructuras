@@ -164,6 +164,34 @@ bool verificarPersonaPorCedula(string cedula){
     }
     return true;
 }
+//---------------------Verificar datos repetidos Evento---------------
+
+bool verificarEventoPorNombre(string nombre){
+    evento * actual = primerEvento;
+    while(actual != NULL) {
+        if(actual->nombre == nombre){
+            return false;
+        }
+        actual = actual->sig;
+    }
+    return true;
+}
+
+//---------------------Verificar datos repetidos instrumento---------------
+
+bool verificarInstrumentoPorNombre(string nombre){
+    instrumentos * actual = PrimerInstrumento;
+    while(actual != NULL) {
+        if(actual->id == nombre){
+            return false;
+        }
+        actual = actual->sig;
+        if(actual == PrimerInstrumento){ // Si se llega al primer elemento nuevamente, salir del bucle
+            break;
+        }
+    }
+    return true;
+}
 
 
 //---------------------BuscarPersona en integrantes---------------
@@ -177,6 +205,8 @@ bool buscarCedulaEnSublista(string cedula, subListaIntegrantes* sublista) {
     }
     return false;
 }
+
+
 
 //---------------------PERSONA CON MAS PARTICIPACIONES EN EVENTOS---------------
 
@@ -317,15 +347,20 @@ void insertarIntegranteEnGrupo(string cedula, string nombreGrupo) {
 
 
 void insertarEvento(string nombre, string lugar, string hora, string dia, int duracion) {
-    evento* nuevoEvento = new evento(nombre, lugar, hora, dia, duracion);
-    if (primerEvento == NULL) {
-        primerEvento = nuevoEvento;
-    } else {
-        evento* actual = primerEvento;
-        while (actual->sig != NULL) {
-            actual = actual->sig;
+    if(verificarEventoPorNombre(nombre)== true){
+        evento* nuevoEvento = new evento(nombre, lugar, hora, dia, duracion);
+        if (primerEvento == NULL) {
+            primerEvento = nuevoEvento;
+        } else {
+            evento* actual = primerEvento;
+            while (actual->sig != NULL) {
+                actual = actual->sig;
+            }
+            actual->sig = nuevoEvento;
         }
-        actual->sig = nuevoEvento;
+    }
+    else{
+        cout<< "datos repetidos" << endl;
     }
 }
 
@@ -353,6 +388,9 @@ void insertarPersona(persona *& p, string nombre, string cedula, int edad) {
         actual->sig = nuevo;
         nuevo->ant = actual;
     }
+    else{
+        cout<< "datos repetidos" << endl;
+    }
 }
 
 void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaFinal) {
@@ -376,17 +414,22 @@ void agregarHorarioaPersona(string cedula, string dia, int horaInicio, int horaF
 }
 
 void insertarInstrumento(instrumentos** primero, string id, string nombre, string tipo) {
-    instrumentos* nuevo = new instrumentos(id, nombre, tipo);
-    if (*primero == NULL) {
-        *primero = nuevo;
-        nuevo->sig = nuevo;
-        nuevo->ant = nuevo;
-    } else {
-        instrumentos* ultimo = (*primero)->ant;
-        nuevo->sig = *primero;
-        nuevo->ant = ultimo;
-        (*primero)->ant = nuevo;
-        ultimo->sig = nuevo;
+    if(verificarInstrumentoPorNombre(nombre)==true){
+        instrumentos* nuevo = new instrumentos(id, nombre, tipo);
+        if (*primero == NULL) {
+            *primero = nuevo;
+            nuevo->sig = nuevo;
+            nuevo->ant = nuevo;
+        } else {
+            instrumentos* ultimo = (*primero)->ant;
+            nuevo->sig = *primero;
+            nuevo->ant = ultimo;
+            (*primero)->ant = nuevo;
+            ultimo->sig = nuevo;
+        }
+    }
+    else{
+        cout<< "datos repetidos" << endl;
     }
 }
 
@@ -729,25 +772,137 @@ void personaConMasInstrumentos(persona* primeraPersona) {
 
     cout << "\nLa persona que toca mas instrumentos es: " << personaConMas->nombre << " , toca: " << maxInstrumentos << " instrumentos" << endl;
 }
+//===========================Instrumetno mas y menos tocado==================================
+void instrumentoMenosTocado() {
+    struct instrumentoContador {
+        instrumentos* instrumento;
+        int contador;
+        instrumentoContador* sig;
+
+        instrumentoContador(instrumentos* inst) {
+            instrumento = inst;
+            contador = 0;
+            sig = NULL;
+        }
+    };
+
+    instrumentoContador* primerInstrumentoContador = NULL;
+
+    persona* actualPersona = primeraPersona;
+    while(actualPersona != NULL) {
+        subListaInstrumentos* actualSubLista = actualPersona->instrumentos;
+        while(actualSubLista != NULL) {
+            instrumentos* actualInstrumento = actualSubLista->instrumento;
+
+            instrumentoContador* actualInstrumentoContador = primerInstrumentoContador;
+            while(actualInstrumentoContador != NULL && actualInstrumentoContador->instrumento != actualInstrumento) {
+                actualInstrumentoContador = actualInstrumentoContador->sig;
+            }
+
+            if(actualInstrumentoContador == NULL) {
+                actualInstrumentoContador = new instrumentoContador(actualInstrumento);
+                actualInstrumentoContador->sig = primerInstrumentoContador;
+                primerInstrumentoContador = actualInstrumentoContador;
+            }
+
+            actualInstrumentoContador->contador++;
+
+            actualSubLista = actualSubLista->sig;
+        }
+        actualPersona = actualPersona->sig;
+    }
+
+    instrumentoContador* actualInstrumentoContador = primerInstrumentoContador;
+    instrumentos* instrumentoMenosTocado = NULL;
+    int contadorMasBajo = INT_MAX;
+    while(actualInstrumentoContador != NULL) {
+        if(actualInstrumentoContador->contador < contadorMasBajo) {
+            contadorMasBajo = actualInstrumentoContador->contador;
+            instrumentoMenosTocado = actualInstrumentoContador->instrumento;
+        }
+        actualInstrumentoContador = actualInstrumentoContador->sig;
+    }
+
+    if(instrumentoMenosTocado != NULL) {
+        cout << "El instrumento menos tocado es: " << instrumentoMenosTocado->nombre << endl;
+    } else {
+        cout << "No hay información suficiente para determinar el instrumento menos tocado." << endl;
+    }
+}
+
+
+void instrumentoMasTocado() {
+    struct instrumentoContador {
+        instrumentos* instrumento;
+        int contador;
+        instrumentoContador* sig;
+
+        instrumentoContador(instrumentos* inst) {
+            instrumento = inst;
+            contador = 0;
+            sig = NULL;
+        }
+    };
+
+    instrumentoContador* primerInstrumentoContador = NULL;
+
+    persona* actualPersona = primeraPersona;
+    while(actualPersona != NULL) {
+        subListaInstrumentos* actualSubLista = actualPersona->instrumentos;
+        while(actualSubLista != NULL) {
+            instrumentos* actualInstrumento = actualSubLista->instrumento;
+
+            instrumentoContador* actualInstrumentoContador = primerInstrumentoContador;
+            while(actualInstrumentoContador != NULL && actualInstrumentoContador->instrumento != actualInstrumento) {
+                actualInstrumentoContador = actualInstrumentoContador->sig;
+            }
+
+            if(actualInstrumentoContador == NULL) {
+                actualInstrumentoContador = new instrumentoContador(actualInstrumento);
+                actualInstrumentoContador->sig = primerInstrumentoContador;
+                primerInstrumentoContador = actualInstrumentoContador;
+            }
+
+            actualInstrumentoContador->contador++;
+
+            actualSubLista = actualSubLista->sig;
+        }
+        actualPersona = actualPersona->sig;
+    }
+
+    instrumentoContador* actualInstrumentoContador = primerInstrumentoContador;
+    instrumentos* instrumentoMasTocado = NULL;
+    int contadorMasAlto = 0;
+    while(actualInstrumentoContador != NULL) {
+        if(actualInstrumentoContador->contador > contadorMasAlto) {
+            contadorMasAlto = actualInstrumentoContador->contador;
+            instrumentoMasTocado = actualInstrumentoContador->instrumento;
+        }
+        actualInstrumentoContador = actualInstrumentoContador->sig;
+    }
+
+    if(instrumentoMasTocado != NULL) {
+        cout << "El instrumento más tocado es: " << instrumentoMasTocado->nombre << endl;
+    } else {
+        cout << "No hay información suficiente para determinar el instrumento más tocado." << endl;
+    }
+}
+
 
 //=================PERSONA PERTENECIENTE A MAS GRUPOS MUSICALES========================
 void personaEnMasGrupos(persona* primeraPersona) {
     int maxGrupos = 0;
     persona* personaMasGrupos = NULL;
 
-    // Recorremos la lista de grupos musicales
     for (grupoMusical* gm = primerGrupoMusical; gm != NULL; gm = gm->sig) {
-        // Recorremos la sublista de integrantes de cada grupo musical
         for (subListaIntegrantes* si = gm->integrates; si != NULL; si = si->sig) {
             int numGrupos = 0;
             persona* p = si->integrante;
 
-            // Contamos cuántos grupos tiene la persona
             for (subListaGrupos* si2 = p->grupos; si2 != NULL; si2 = si2->sig) {
                 numGrupos++;
             }
 
-            // Si tiene más grupos que la persona con más grupos, la almacenamos
             if (numGrupos > maxGrupos) {
                 maxGrupos = numGrupos;
                 personaMasGrupos = p;
@@ -755,7 +910,6 @@ void personaEnMasGrupos(persona* primeraPersona) {
         }
     }
 
-    // Imprimimos el nombre de la persona con más grupos musicales
     if (personaMasGrupos != NULL) {
         cout << "La persona con más grupos musicales es: " << personaMasGrupos->nombre << endl;
     } else {
@@ -851,7 +1005,7 @@ void borrarEvento(string nombreBuscado, evento*& primerEvento) {
 
 //----------------Borrar Grupo----------------
 
-void eliminarGrupoMusical(string nombreBuscado, grupoMusical*& primerGrupoMusical) {
+void borrarGrupoMusical(string nombreBuscado, grupoMusical*& primerGrupoMusical) {
     grupoMusical* grupoMusicalActual = primerGrupoMusical;
     grupoMusical* grupoMusicalAnterior = NULL;
 
@@ -872,6 +1026,46 @@ void eliminarGrupoMusical(string nombreBuscado, grupoMusical*& primerGrupoMusica
     }
      cout << "No se encontró el grupo musical con el nombre " << nombreBuscado << "." << endl;
 }
+
+void borrarInstrumento(string id) {
+    if (PrimerInstrumento == NULL) {
+        return;
+    }
+
+    instrumentos* inicio = PrimerInstrumento;
+    instrumentos* fin = PrimerInstrumento->ant;
+
+    while (inicio != fin) {
+        instrumentos* medio = inicio;
+
+        int distancia = 0;
+        while (medio->sig != inicio && distancia <= fin - inicio) {
+            medio = medio->sig;
+            distancia++;
+        }
+
+        if (medio->id == id) {
+            inicio = fin = medio;
+            break;
+        } else if (medio->id < id) {
+            inicio = medio->sig;
+        } else {
+            fin = medio->ant;
+        }
+    }
+
+    if (inicio->id == id) {
+        if (inicio == PrimerInstrumento) {
+            PrimerInstrumento = inicio->sig;
+        }
+
+        inicio->ant->sig = inicio->sig;
+        inicio->sig->ant = inicio->ant;
+
+        delete inicio;
+    }
+}
+
 
 
 //==============================MENUS Y SUB-MENUS=============================
@@ -946,11 +1140,12 @@ void menuConsultas() {
         }
 
         else if(op == 4){
-
+            instrumentoMasTocado();
+            instrumentoMenosTocado();
         }
 
         else if(op == 5){
-
+            personaEnMasGrupos(primeraPersona);
         }
 
         else if(op == 6){
@@ -962,7 +1157,7 @@ void menuConsultas() {
         }
 
         else if (op == 8) {
-
+            grupoMasEventos(primerGrupoMusical);
         }
 
         else if(op == 9){
@@ -1030,6 +1225,7 @@ void menuReportes() {
 //------------------------Cargar Datos--------------------------------
 
 void cargarDatos(){
+    //10 inserciones
     insercionAlInicioGrupoMusical("Ajenos","2007",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Morat","2015",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Almendros","2012",primerGrupoMusical);
@@ -1040,7 +1236,7 @@ void cargarDatos(){
     insercionAlInicioGrupoMusical("Muse","1994",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Korn","1993",primerGrupoMusical);
     insercionAlInicioGrupoMusical("Oasis","1991",primerGrupoMusical);
-
+    //10 inserciones
     insertarPersona(primeraPersona,"Josue","208260603",21);
     insertarPersona(primeraPersona,"Carlos","302540673",20);
     insertarPersona(primeraPersona,"Luis","603210123",19);
@@ -1051,7 +1247,7 @@ void cargarDatos(){
     insertarPersona(primeraPersona,"Aberto","674219085",24);
     insertarPersona(primeraPersona,"Diego","420691337",17);
     insertarPersona(primeraPersona,"Rodrigo","567891234",20);
-
+    //10 inserciones
     insertarInstrumento(&PrimerInstrumento,"1","trompeta","viento");
     insertarInstrumento(&PrimerInstrumento,"2","trombon","viento");
     insertarInstrumento(&PrimerInstrumento,"3","saxofon","viento");
@@ -1063,21 +1259,22 @@ void cargarDatos(){
     insertarInstrumento(&PrimerInstrumento,"9","triangulo","percusion");
     insertarInstrumento(&PrimerInstrumento,"10","bajo","electricos");
 
+    //falta
     insertarInstrumentoaPersona("302540673","1");
     insertarInstrumentoaPersona("302540673","2");
-
+    //falta
     insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
-
+    //falta
     insertarEventoaGrupo("Ajenos","BaileFortuna");
-
+    //falta
     insertarInstrumentosaGrupo("3",3,"BaileFortuna");
-
+    //falta
     insertarDirectoraGrupoMusical("603210123","Ajenos");
     insertarDirectoraGrupoMusical("302540673","Morat");
-
+    //falta
     insertarIntegranteEnGrupo("603210123","Ajenos");
     insertarIntegranteEnGrupo("104820912","Morat");
-
+    //10 inserciones
     agregarHorarioaPersona("208260603", "lunes", 1000, 1600);
     agregarHorarioaPersona("208260603", "Martes", 1130, 1630);
     agregarHorarioaPersona("302540673", "Lunes", 7000, 1200);
