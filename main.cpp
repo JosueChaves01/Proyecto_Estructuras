@@ -46,6 +46,9 @@ struct subListaInstrumentosSolicitados{
     instrumentos * instrumento = NULL;
     subListaInstrumentosSolicitados * sig = NULL;
 };
+
+struct subListaGrupos;
+
 struct persona{
     //lista doble
     string nombre;
@@ -53,6 +56,7 @@ struct persona{
     int edad;
     horarioDisponible* horarios=NULL;
     subListaInstrumentos * instrumentos= NULL;
+    subListaGrupos * grupos = NULL;
     persona*sig;
     persona*ant;
 
@@ -112,6 +116,11 @@ struct grupoMusical{
         sig = NULL;
     }
 }*primerGrupoMusical;
+
+struct subListaGrupos{
+    grupoMusical * grupo=NULL;
+    subListaGrupos * sig = NULL;
+};
 
 struct historiaEventos{
     //lista doble y circular
@@ -732,12 +741,12 @@ void personaEnMasGrupos(persona* primeraPersona) {
         for (subListaIntegrantes* si = gm->integrates; si != NULL; si = si->sig) {
             int numGrupos = 0;
             persona* p = si->integrante;
-            
+
             // Contamos cuántos grupos tiene la persona
-            for (subListaIntegrantes* si2 = p->grupos; si2 != NULL; si2 = si2->sig) {
+            for (subListaGrupos* si2 = p->grupos; si2 != NULL; si2 = si2->sig) {
                 numGrupos++;
             }
-            
+
             // Si tiene más grupos que la persona con más grupos, la almacenamos
             if (numGrupos > maxGrupos) {
                 maxGrupos = numGrupos;
