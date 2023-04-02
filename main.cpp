@@ -1262,6 +1262,10 @@ void cargarDatos(){
     //falta
     insertarInstrumentoaPersona("302540673","1");
     insertarInstrumentoaPersona("302540673","2");
+    insertarInstrumentoaPersona("567891234", "6");
+    insertarInstrumentoaPersona("420691337", "9");
+    insertarInstrumentoaPersona("674219085", "3");
+    insertarInstrumentoaPersona("581934762", "4");
     //falta
     insertarEvento("BaileFortuna","Fortuna","07:00","Lunes",3.5);
     //falta
